@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Марк](https://up.htmlacademy.ru/ecmascript-individual/2/user/2509141).
-* Наставник: `Неизвестно`.
+* Наставник: [Роман Марченко](https://up.htmlacademy.ru/ecmascript-individual/2/user/505487).
 
 ---
 
