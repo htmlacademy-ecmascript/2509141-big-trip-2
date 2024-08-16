@@ -1,43 +1,63 @@
-import { createElement } from '../../../render.js';
+import { createElement } from '/src/render';
+import { humanizeDate } from '/src/util';
+import { DateTimeFormat } from '/src/const';
 
 
-const createEventHeaderTemplate = () =>
-  `<header class="event__header">
+const createOptionTemplate = (name) =>
+  `<option value="${name}"></option>`;
+
+
+const createEventHeaderTemplate = (waypoints) => {
+  const editedWaypoint = waypoints[0];
+  const { id, type } = editedWaypoint;
+  const price = editedWaypoint['base_price'];
+
+  const start = humanizeDate(editedWaypoint['date_from'], DateTimeFormat.EDIT);
+  const end = humanizeDate(editedWaypoint['date_to'], DateTimeFormat.EDIT);
+
+  const name = editedWaypoint.destination ? editedWaypoint.destination.name : '';
+
+  const options = waypoints.map(({destination}) => createOptionTemplate(destination.name)).join('');
+
+  return (`<header class="event__header">
     <div class="event__field-group  event__field-group--destination">
-      <label class="event__label  event__type-output" for="event-destination-1">
-        Flight
+      <label class="event__label  event__type-output" for="event-destination-${id}">
+        ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
-      <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
+      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+      <datalist id="destination-list-${id}">
+        ${options}
       </datalist>
     </div>
 
     <div class="event__field-group  event__field-group--time">
-      <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+      <label class="visually-hidden" for="event-start-time-${id}">From</label>
+      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${start}">
       &mdash;
-      <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+      <label class="visually-hidden" for="event-end-time-${id}">To</label>
+      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${end}">
     </div>
 
     <div class="event__field-group  event__field-group--price">
-      <label class="event__label" for="event-price-1">
+      <label class="event__label" for="event-price-${id}">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-  </header>`;
+  </header>`);
+};
 
 
 export default class EventHeaderView {
+  constructor(waypoints) {
+    this.waypoints = waypoints;
+  }
+
   getTemplate() {
-    return createEventHeaderTemplate();
+    return createEventHeaderTemplate(this.waypoints);
   }
 
   getElement () {
