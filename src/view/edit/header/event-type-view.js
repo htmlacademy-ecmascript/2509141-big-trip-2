@@ -3,11 +3,11 @@ import { createElement } from '/src/render.js';
 
 
 const createTypeItemTemplate = (id, type) => {
-  type = type.toLowerCase();
+  const lowType = type.toLowerCase();
 
   return (`<div class="event__type-item">
-    <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${type}</label>
+    <input id="event-type-${lowType}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowType}">
+    <label class="event__type-label  event__type-label--${lowType}" for="event-type-${lowType}-${id}">${type}</label>
   </div>`);
 };
 
