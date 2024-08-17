@@ -19,14 +19,14 @@ const formatDuration = (start, end) => {
 
   // ❔ Нарушение DRY? Есть лучший способ задать данный формат?
   if (duration.days() > 0) {
-    return duration.format('DD[D] HH[H] MM[M]');
+    return duration.format('DD[D] HH[H] mm[M]');
   }
 
   if (duration.hours() > 0) {
-    return duration.format('HH[H] MM[M]');
+    return duration.format('HH[H] mm[M]');
   }
 
-  return duration.format('MM[M]');
+  return duration.format('mm[M]');
 };
 
 
