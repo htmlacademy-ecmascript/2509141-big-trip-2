@@ -1,24 +1,12 @@
-import { createElement } from '../../../render.js';
+import AbstractView from '/src/framework/view/abstract-view';
 
 
 const createDeleteButtonTemplate = () =>
   '<button class="event__reset-btn" type="reset">Delete</button>';
 
 
-export default class DeleteButtonView {
-  getTemplate() {
+export default class DeleteButtonView extends AbstractView {
+  get template() {
     return createDeleteButtonTemplate();
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

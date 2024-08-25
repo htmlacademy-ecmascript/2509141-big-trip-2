@@ -1,6 +1,6 @@
-import { createElement } from '/src/render';
 import { humanizeDate } from '/src/util';
 import { DateTimeFormat } from '/src/const';
+import AbstractView from '/src/framework/view/abstract-view';
 
 
 const createOptionTemplate = (name) =>
@@ -51,24 +51,15 @@ const createEventHeaderTemplate = (waypoints) => {
 };
 
 
-export default class EventHeaderView {
+export default class EventHeaderView extends AbstractView {
+  #waypoints = null;
+
   constructor(waypoints) {
-    this.waypoints = waypoints;
+    super();
+    this.#waypoints = waypoints;
   }
 
-  getTemplate() {
-    return createEventHeaderTemplate(this.waypoints);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventHeaderTemplate(this.#waypoints);
   }
 }

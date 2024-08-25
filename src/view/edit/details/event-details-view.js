@@ -1,6 +1,6 @@
-import { createElement } from '/src/render.js';
 import { getOffers } from '/src/mock/offers.js';
 import { has as hasOfferWithId } from '/src/mock/offers';
+import AbstractView from '/src/framework/view/abstract-view';
 
 
 const isChecked = (id, offers) =>
@@ -61,8 +61,8 @@ const createEventDetailsTemplate = (waypoint) => {
   const hasOffers = getOffers(waypoint.type).length > 0;
   const offersTemplate = hasOffers ? createOffersTemplate(waypoint) : '';
 
-  const hasDescription = waypoint.destination;
-  const destinationTemplate = hasDescription ? createDestinationTemplate(waypoint.destination) : '';
+  const hasDestination = waypoint.destination;
+  const destinationTemplate = hasDestination ? createDestinationTemplate(waypoint.destination) : '';
 
   return `<section class="event__details">
             ${offersTemplate}
@@ -71,24 +71,15 @@ const createEventDetailsTemplate = (waypoint) => {
 };
 
 
-export default class EventDetailsView {
+export default class EventDetailsView extends AbstractView {
+  #waypoint = null;
+
   constructor({waypoint}) {
-    this.waypoint = waypoint;
+    super();
+    this.#waypoint = waypoint;
   }
 
-  getTemplate() {
-    return createEventDetailsTemplate(this.waypoint);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventDetailsTemplate(this.#waypoint);
   }
 }

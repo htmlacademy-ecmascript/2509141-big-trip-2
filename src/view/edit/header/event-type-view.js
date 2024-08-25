@@ -1,5 +1,5 @@
 import { TYPES } from '/src/const';
-import { createElement } from '/src/render.js';
+import AbstractView from '/src/framework/view/abstract-view';
 
 
 const createTypeItemTemplate = (id, type) => {
@@ -28,24 +28,15 @@ const createEventTypeTemplate = ({id, type}) =>
   </div>`;
 
 
-export default class EventTypeView {
+export default class EventTypeView extends AbstractView {
+  #waypoint = null;
+
   constructor({waypoint}) {
-    this.waypoint = waypoint;
+    super();
+    this.#waypoint = waypoint;
   }
 
-  getTemplate() {
-    return createEventTypeTemplate(this.waypoint);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventTypeTemplate(this.#waypoint);
   }
 }

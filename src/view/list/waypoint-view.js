@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import durationAPI from 'dayjs/plugin/duration';
-import { createElement } from '/src/render.js';
+import AbstractView from '/src/framework/view/abstract-view';
 import { humanizeDate } from '/src/util';
 import { DateTimeFormat } from '/src/const';
 
@@ -14,10 +14,9 @@ const createOfferTemplate = ({ title, price }) =>
 
 
 const formatDuration = (start, end) => {
-  dayjs.extend(durationAPI); // ❔ Где должны распологаться операции extend? Это ведь часть импорта.
+  dayjs.extend(durationAPI);
   const duration = dayjs.duration(end.diff(start));
 
-  // ❔ Нарушение DRY? Есть лучший способ задать данный формат?
   if (duration.days() > 0) {
     return duration.format('DD[D] HH[H] mm[M]');
   }
@@ -31,7 +30,6 @@ const formatDuration = (start, end) => {
 
 
 const createWaypointTemplate = (waypoint) => {
-  // ❔ Пришлось отказаться от тотальной деструктуризации. Ведь структура должна в точности повторять полученный ответ с сервера, разве нет?
   const { type } = waypoint;
   const { name } = waypoint.destination;
 
@@ -83,24 +81,15 @@ const createWaypointTemplate = (waypoint) => {
 };
 
 
-export default class WaypointView {
+export default class WaypointView extends AbstractView {
+  #waypoint = null;
+
   constructor({waypoint}) {
-    this.waypoint = waypoint;
+    super();
+    this.#waypoint = waypoint;
   }
 
-  getTemplate() {
-    return createWaypointTemplate(this.waypoint);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createWaypointTemplate(this.#waypoint);
   }
 }

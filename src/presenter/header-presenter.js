@@ -1,18 +1,19 @@
-import { render, RenderPosition } from '../render.js';
+import { render, RenderPosition } from '/src/framework/render.js';
 import FiltersView from '../view/header/filters-view';
 import TripInfoView from '../view/header/trip-info-view';
 
 
 export default class HeaderPresenter {
-  // ❔ Допустимое обращение к document из presenter? Не нарушает архитектуру?
-  siteFiltersContainer = document.querySelector('.trip-controls__filters');
+  #container = null;
+  #siteFiltersContainer = null;
 
   constructor({container}) {
-    this.container = container;
+    this.#container = container;
+    this.#siteFiltersContainer = this.#container.querySelector('.trip-controls__filters');
   }
 
   init() {
-    render(new TripInfoView(), this.container, RenderPosition.AFTERBEGIN);
-    render(new FiltersView(), this.siteFiltersContainer);
+    render(new TripInfoView(), this.#container, RenderPosition.AFTERBEGIN);
+    render(new FiltersView(), this.#siteFiltersContainer);
   }
 }

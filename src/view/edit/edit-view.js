@@ -1,24 +1,12 @@
-import { createElement } from '../../render.js';
+import AbstractView from '/src/framework/view/abstract-view';
 
 
 const createEditTemplate = () =>
   '<form class="event event--edit" action="#" method="post"></form>';
 
 
-export default class EditView {
-  getTemplate() {
+export default class EditView extends AbstractView {
+  get template() {
     return createEditTemplate();
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
