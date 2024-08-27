@@ -1,18 +1,13 @@
-import { render, RenderPosition } from '/src/framework/render.js';
+import { render, replace } from '/src/framework/render.js';
+import { isEscapeKey } from '../util.js';
 import EditView from '../view/edit/edit-view.js';
-import EventDetailsView from '../view/edit/details/event-details-view';
-import EventHeaderView from '../view/edit/header/event-header-view';
-import EventTypeView from '../view/edit/header/event-type-view';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import WaypointView from '../view/list/waypoint-view';
-import DeleteButtonView from '../view/edit/header/delete-button-view';
-import RollupButtonView from '../view/edit/header/rollup-button-view';
 
 
 export default class Presenter {
-  #list = new ListView();
-  #editForm = new EditView();
+  #list = new ListView(); // ❔ Почему это здесь, а не в конструкторе или init()?
 
   #container = null;
   #model = null;
@@ -25,32 +20,62 @@ export default class Presenter {
   }
 
 
-  render = (waypoint) => {
-    render(
-      new WaypointView({waypoint}),
-      this.#list.element);
-  };
-
   init() {
     this.#waypoints = [...this.#model.waypoints];
 
+    this.#renderSortView();
+    this.#renderWaypoints();
+  }
+
+  #renderSortView() {
     render(new SortView(), this.#container);
+  }
 
-    render(this.#editForm, this.#container);
-
-    this.editingWaypoint = this.#waypoints[0];
-    this.eventHeader = new EventHeaderView(this.#waypoints);
-    render(this.eventHeader, this.#editForm.element, RenderPosition.AFTERBEGIN);
-    render(new EventTypeView({waypoint: this.editingWaypoint}), this.eventHeader.element, RenderPosition.AFTERBEGIN);
-    render(new DeleteButtonView(), this.eventHeader.element);
-    render(new RollupButtonView(), this.eventHeader.element);
-
-    this.eventDetails = new EventDetailsView({waypoint: this.editingWaypoint});
-    render(this.eventDetails, this.#editForm.element);
-
+  #renderWaypoints() {
     render(this.#list, this.#container);
-    for (let i = 1; i < this.#waypoints.length; i++) {
-      this.render(this.#waypoints[i]);
+    for (let i = 0; i < this.#waypoints.length; i++) {
+      this.#render(this.#waypoints[i]);
     }
+  }
+
+  #render(waypoint) {
+    const escKeyDownHandler = (evt) => {
+      if (isEscapeKey(evt)) {
+        evt.preventDefault();
+        replaceToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const waypointComponent = new WaypointView({
+      waypoint,
+      onEditClick: () => {
+        replaceToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    // ❓ Для реализации переключения между View пришлось объединить множество компонентов в один EditView.
+    // В результате он страшно раздулся и выглядит непотребно.
+    // С этим можно что-то сделать?
+    const editFormComponent = new EditView({
+      waypoint,
+      onEditClick: () => {
+        replaceToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replaceToForm() {
+      replace(editFormComponent, waypointComponent);
+    }
+
+    function replaceToWaypoint() {
+      replace(waypointComponent, editFormComponent);
+    }
+
+    render(
+      waypointComponent,
+      this.#list.element);
   }
 }
