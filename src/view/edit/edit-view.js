@@ -1,19 +1,16 @@
 import AbstractView from '/src/framework/view/abstract-view';
-import { getOffers } from '/src/mock/offers.js';
-import { has as hasOfferWithId } from '/src/mock/offers';
 import { humanizeDate } from '/src/util';
-import { DateTimeFormat } from '/src/const';
-import { TYPES } from '/src/const';
+import { TYPES, DateTimeFormat } from '/src/const';
 
 
-const isChecked = (id, offers) =>
-  hasOfferWithId(offers, id) ? 'checked' : '';
+const isChecked = (id, offers, offersModel) =>
+  offersModel.hasOfferWithId(offers, id) ? 'checked' : '';
 
 
-const createOfferTemplate = ({id, title, price}, checkedOffers) =>
+const createOfferTemplate = ({id, title, price}, checkedOffers, offersModel) =>
   `
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title.split(' ').at(-1)}-${id}" type="checkbox" name="event-offer-${title.split(' ').at(-1)}" ${isChecked(id, checkedOffers)}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title.split(' ').at(-1)}-${id}" type="checkbox" name="event-offer-${title.split(' ').at(-1)}" ${isChecked(id, checkedOffers, offersModel)}>
     <label class="event__offer-label" for="event-offer-${title.split(' ').at(-1)}-${id}">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
@@ -21,14 +18,14 @@ const createOfferTemplate = ({id, title, price}, checkedOffers) =>
     </label>
   </div>`;
 
-const createOffersTemplate = ({type, offers}) => {
-  const allOffers = getOffers(type);
+const createOffersTemplate = ({type, offers}, offersModel) => {
+  const allOffers = offersModel.getOffers(type);
 
   return (`<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
-      ${allOffers.map((offer) => createOfferTemplate(offer, offers)).join('')}
+      ${allOffers.map((offer) => createOfferTemplate(offer, offers, offersModel)).join('')}
     </div>
   </section>`);
 };
@@ -60,9 +57,9 @@ const createDestinationTemplate = ({description, pictures}) =>
   </section>`;
 
 
-const createEventDetailsTemplate = (waypoint) => {
-  const hasOffers = getOffers(waypoint.type).length > 0;
-  const offersTemplate = hasOffers ? createOffersTemplate(waypoint) : '';
+const createEventDetailsTemplate = (waypoint, offersModel) => {
+  const hasOffers = offersModel.getOffers(waypoint.type).length > 0;
+  const offersTemplate = hasOffers ? createOffersTemplate(waypoint, offersModel) : '';
 
   const hasDestination = waypoint.destination;
   const destinationTemplate = hasDestination ? createDestinationTemplate(waypoint.destination) : '';
@@ -110,15 +107,15 @@ const createCancelButtonTemplate = () =>
   '<button class="event__reset-btn" type="reset">Cancel</button>';
 
 const createEventHeaderTemplate = (waypoint) => {
-  const { id, type } = waypoint;
-  const price = waypoint['base_price'];
+  const { id, type, destination, 'base_price': price } = waypoint;
 
   const start = humanizeDate(waypoint['date_from'], DateTimeFormat.EDIT);
   const end = humanizeDate(waypoint['date_to'], DateTimeFormat.EDIT);
 
-  const name = waypoint.destination ? waypoint.destination.name : '';
+  const name = destination?.name ?? '';
 
-  const options = createOptionTemplate(waypoint.destination.name);
+  // ❓ Как правильно составлять список доступных пунктов назначения?
+  const options = createOptionTemplate(name);
 
   return (`
     <header class="event__header">
@@ -155,20 +152,22 @@ const createEventHeaderTemplate = (waypoint) => {
   </header>`);
 };
 
-const createEditTemplate = (waypoint) =>
+const createEditTemplate = (waypoint, offersModel) =>
   `<form class="event event--edit" action="#" method="post">
     ${createEventHeaderTemplate(waypoint)}
-    ${createEventDetailsTemplate(waypoint)}
+    ${createEventDetailsTemplate(waypoint, offersModel)}
   </form>`;
 
 
 export default class EditView extends AbstractView {
   #waypoint = null;
+  #offersModel = null;
   #handleEditClick = null;
 
-  constructor({waypoint, onEditClick}) {
+  constructor({waypoint, offersModel, onEditClick}) {
     super();
     this.#waypoint = waypoint;
+    this.#offersModel = offersModel;
     this.#handleEditClick = onEditClick;
 
     this.element.querySelector('.event__rollup-btn')
@@ -178,7 +177,7 @@ export default class EditView extends AbstractView {
   }
 
   get template() {
-    return createEditTemplate(this.#waypoint);
+    return createEditTemplate(this.#waypoint, this.#offersModel);
   }
 
   #editClickHandler = (evt) => {

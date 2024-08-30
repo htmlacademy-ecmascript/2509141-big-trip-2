@@ -1,8 +1,6 @@
 import dayjs from 'dayjs';
-import { getRandomArrayElement, getRandomBool, getRandomIntInRange } from '../util';
-import { getRandomDestination } from './destinations';
 import { TYPES } from '../const';
-import { getRandomOffers } from './offers';
+import { getRandomArrayElement, getRandomBool, getRandomIntInRange } from '../util';
 
 
 const getRandomTime = () => {
@@ -13,7 +11,7 @@ const getRandomTime = () => {
 };
 
 
-const getRandomWaypoint = () => {
+const getRandomWaypoint = (getRandomOffers, getRandomDestination) => {
   const type = getRandomArrayElement(TYPES);
 
   return {

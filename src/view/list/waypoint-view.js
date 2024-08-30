@@ -30,15 +30,15 @@ const formatDuration = (start, end) => {
 
 
 const createWaypointTemplate = (waypoint) => {
-  const { type } = waypoint;
-  const { name } = waypoint.destination;
-
-  const start = waypoint['date_from'];
-  const end = waypoint['date_to'];
-  const isFavorite = waypoint['is_favorite'];
-  const price = waypoint['base_price'];
-
-  const offers = waypoint.offers;
+  const {
+    type,
+    offers,
+    destination: { name },
+    'date_from': start,
+    'date_to': end,
+    'is_favorite': isFavorite,
+    'base_price': price
+  } = waypoint;
 
   const offerElements = offers.map(createOfferTemplate).join('');
   const favoriteClass = isFavorite ? ' event__favorite-btn--active' : '';
