@@ -1,8 +1,6 @@
 import { TYPES } from '../const';
-import { getObj, getRandomBool, getRandomIntInRange, createIdGeneratorInRange } from '../util';
+import { getRandomIntInRange, createIdGeneratorInRange } from '../util';
 
-
-const mockOffers = [];
 
 const createMockOffer = (generateId, type) => {
   const id = generateId();
@@ -26,35 +24,8 @@ const createMockTypeOffers = (type) => {
 };
 
 
-const getOffers = (type) =>
-  getObj(mockOffers, 'type', type.toLowerCase()).offers;
-
-const getRandomOffers = (type) => {
-  const offers = [];
-  const typeOffers = getOffers(type);
-
-  typeOffers.forEach((offer) => {
-    if (getRandomBool()) {
-      offers.push(offer);
-    }
-  });
-
-  return offers;
-};
-
-const getOffer = (type, id) => {
-  const offers = getOffers(type);
-  const offer = getObj(offers, 'id', id);
-  return offer;
-};
-
-const has = (offers, id) =>
-  !!getObj(offers, 'id', id);
+const generateMockOffers = () =>
+  TYPES.map(createMockTypeOffers);
 
 
-const init = () => {
-  TYPES.forEach((type) => mockOffers.push(createMockTypeOffers(type)));
-};
-
-
-export { init, getOffers, getOffer, getRandomOffers, has };
+export default generateMockOffers;

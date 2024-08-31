@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 
 
+const isEscapeKey = (evt) =>
+  evt.key === 'Escape';
+
 const createIdGeneratorInRange = (min, max) =>
   () => min <= max ? min++ : null;
 
@@ -26,8 +29,17 @@ const humanizeDate = (date, format) =>
 const getObj = (array, key, value) =>
   array.find((obj) => obj[key] === value);
 
-const has = (array, key, value) =>
+const hasValueWithKeyInArray = (array, key, value) =>
   !!getObj(array, key, value);
 
 
-export { getRandomArrayElement, getRandomIntInRange, getRandomBool, createIdGeneratorInRange, getObj, humanizeDate, has };
+export {
+  getRandomArrayElement,
+  getRandomIntInRange,
+  getRandomBool,
+  createIdGeneratorInRange,
+  getObj,
+  humanizeDate,
+  hasValueWithKeyInArray,
+  isEscapeKey
+};

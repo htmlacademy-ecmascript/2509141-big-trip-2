@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import durationAPI from 'dayjs/plugin/duration';
-import { createElement } from '/src/render.js';
+import AbstractView from '/src/framework/view/abstract-view';
 import { humanizeDate } from '/src/util';
 import { DateTimeFormat } from '/src/const';
 
@@ -14,10 +14,9 @@ const createOfferTemplate = ({ title, price }) =>
 
 
 const formatDuration = (start, end) => {
-  dayjs.extend(durationAPI); // ❔ Где должны распологаться операции extend? Это ведь часть импорта.
+  dayjs.extend(durationAPI);
   const duration = dayjs.duration(end.diff(start));
 
-  // ❔ Нарушение DRY? Есть лучший способ задать данный формат?
   if (duration.days() > 0) {
     return duration.format('DD[D] HH[H] mm[M]');
   }
@@ -31,16 +30,15 @@ const formatDuration = (start, end) => {
 
 
 const createWaypointTemplate = (waypoint) => {
-  // ❔ Пришлось отказаться от тотальной деструктуризации. Ведь структура должна в точности повторять полученный ответ с сервера, разве нет?
-  const { type } = waypoint;
-  const { name } = waypoint.destination;
-
-  const start = waypoint['date_from'];
-  const end = waypoint['date_to'];
-  const isFavorite = waypoint['is_favorite'];
-  const price = waypoint['base_price'];
-
-  const offers = waypoint.offers;
+  const {
+    type,
+    offers,
+    destination: { name },
+    'date_from': start,
+    'date_to': end,
+    'is_favorite': isFavorite,
+    'base_price': price
+  } = waypoint;
 
   const offerElements = offers.map(createOfferTemplate).join('');
   const favoriteClass = isFavorite ? ' event__favorite-btn--active' : '';
@@ -83,24 +81,25 @@ const createWaypointTemplate = (waypoint) => {
 };
 
 
-export default class WaypointView {
-  constructor({waypoint}) {
-    this.waypoint = waypoint;
+export default class WaypointView extends AbstractView {
+  #waypoint = null;
+  #handleEditClick = null;
+
+  constructor({waypoint, onEditClick}) {
+    super();
+    this.#waypoint = waypoint;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createWaypointTemplate(this.waypoint);
+  get template() {
+    return createWaypointTemplate(this.#waypoint);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

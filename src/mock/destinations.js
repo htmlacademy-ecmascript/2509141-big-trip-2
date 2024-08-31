@@ -1,7 +1,3 @@
-import { getRandomArrayElement } from '../util';
-import { getObj } from '/src/util';
-
-
 const mockDestinations = [
   {
     id: 'cfe416cq-10xa-ye10-8077-2fs9a01edcab',
@@ -85,11 +81,8 @@ const mockDestinations = [
 ];
 
 
-const getDestination = (id) =>
-  getObj(mockDestinations, 'id', id);
-
-const getRandomDestination = () =>
-  getRandomArrayElement(mockDestinations);
+const getAllDestinations = () =>
+  mockDestinations;
 
 
-export { getDestination, getRandomDestination };
+export default getAllDestinations;

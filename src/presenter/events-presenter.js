@@ -1,54 +1,84 @@
-import { render, RenderPosition } from '../render.js';
+import { render, replace } from '/src/framework/render.js';
+import { isEscapeKey } from '../util.js';
 import EditView from '../view/edit/edit-view.js';
-import EventDetailsView from '../view/edit/details/event-details-view';
-import EventHeaderView from '../view/edit/header/event-header-view';
-import EventTypeView from '../view/edit/header/event-type-view';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import WaypointView from '../view/list/waypoint-view';
-import DeleteButtonView from '../view/edit/header/delete-button-view';
-import RollupButtonView from '../view/edit/header/rollup-button-view';
 
 
 export default class Presenter {
-  list = new ListView();
-  editForm = new EditView();
+  #list = new ListView(); // ❓ Почему это здесь, а не в конструкторе или init()?
+  #container = null;
 
-  constructor({container, model}) {
-    this.container = container;
-    this.model = model;
+  #waypointsModel = null;
+  #offersModel = null;
+
+  #waypoints = [];
+
+  constructor({container, waypointsModel, offersModel}) {
+    this.#container = container;
+    this.#waypointsModel = waypointsModel;
+    this.#offersModel = offersModel;
   }
 
-  // ❔ Допустимо выносить часть логики в функцию в presenter?
-  // Не нарушает ли это Д26?
-  // ❔ Допустимо ли использовать стрелочные функции внутри класса?
-  // Как иначе избежать потери окружения?
-  render = (waypoint) => {
-    render(
-      new WaypointView({waypoint}),
-      this.list.getElement());
-  };
 
   init() {
-    this.waypoints = [...this.model.getWaypoints()];
+    this.#waypoints = [...this.#waypointsModel.waypoints];
 
-    render(new SortView(), this.container);
+    this.#renderSortView();
+    this.#renderWaypoints();
+  }
 
-    render(this.editForm, this.container);
+  #renderSortView() {
+    render(new SortView(), this.#container);
+  }
 
-    this.editingWaypoint = this.waypoints[0];
-    this.eventHeader = new EventHeaderView(this.waypoints);
-    render(this.eventHeader, this.editForm.getElement(), RenderPosition.AFTERBEGIN);
-    render(new EventTypeView({waypoint: this.editingWaypoint}), this.eventHeader.getElement(), RenderPosition.AFTERBEGIN);
-    render(new DeleteButtonView(), this.eventHeader.getElement());
-    render(new RollupButtonView(), this.eventHeader.getElement());
-
-    this.eventDetails = new EventDetailsView({waypoint: this.editingWaypoint});
-    render(this.eventDetails, this.editForm.getElement());
-
-    render(this.list, this.container);
-    for (let i = 1; i < this.waypoints.length; i++) {
-      this.render(this.waypoints[i]);
+  #renderWaypoints() {
+    render(this.#list, this.#container);
+    for (let i = 0; i < this.#waypoints.length; i++) {
+      this.#render(this.#waypoints[i], this.#offersModel);
     }
+  }
+
+  #render(waypoint, offersModel) {
+    const escKeyDownHandler = (evt) => {
+      if (isEscapeKey(evt)) {
+        evt.preventDefault();
+        replaceToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const waypointComponent = new WaypointView({
+      waypoint,
+      onEditClick: () => {
+        replaceToForm();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    // ❓ Для реализации переключения между View пришлось объединить множество компонентов в один EditView.
+    // В результате он страшно раздулся и выглядит непотребно.
+    // С этим можно что-то сделать?
+    const editFormComponent = new EditView({
+      waypoint,
+      offersModel,
+      onEditClick: () => {
+        replaceToWaypoint();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replaceToForm() {
+      replace(editFormComponent, waypointComponent);
+    }
+
+    function replaceToWaypoint() {
+      replace(waypointComponent, editFormComponent);
+    }
+
+    render(
+      waypointComponent,
+      this.#list.element);
   }
 }
