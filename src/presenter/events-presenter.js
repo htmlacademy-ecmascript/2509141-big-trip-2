@@ -7,7 +7,7 @@ import WaypointView from '../view/list/waypoint-view';
 
 
 export default class Presenter {
-  #list = new ListView(); // ❓ Почему это здесь, а не в конструкторе или init()?
+  #list = new ListView();
   #container = null;
 
   #waypointsModel = null;
@@ -36,11 +36,11 @@ export default class Presenter {
   #renderWaypoints() {
     render(this.#list, this.#container);
     for (let i = 0; i < this.#waypoints.length; i++) {
-      this.#render(this.#waypoints[i], this.#offersModel);
+      this.#renderWaypoint(this.#waypoints[i], this.#offersModel);
     }
   }
 
-  #render(waypoint, offersModel) {
+  #renderWaypoint(waypoint, offersModel) {
     const escKeyDownHandler = (evt) => {
       if (isEscapeKey(evt)) {
         evt.preventDefault();
@@ -57,12 +57,10 @@ export default class Presenter {
       }
     });
 
-    // ❓ Для реализации переключения между View пришлось объединить множество компонентов в один EditView.
-    // В результате он страшно раздулся и выглядит непотребно.
-    // С этим можно что-то сделать?
+    const allTypeOffers = offersModel.getOffers(waypoint.type);
     const editFormComponent = new EditView({
       waypoint,
-      offersModel,
+      allTypeOffers,
       onEditClick: () => {
         replaceToWaypoint();
         document.removeEventListener('keydown', escKeyDownHandler);

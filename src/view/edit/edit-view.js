@@ -3,22 +3,22 @@ import createEventHeaderTemplate from './template/event-header';
 import createEventDetailsTemplate from './template/event-details';
 
 
-const createEditTemplate = (waypoint, offersModel) =>
+const createEditTemplate = (waypoint, allTypeOffers) =>
   `<form class="event event--edit" action="#" method="post">
     ${createEventHeaderTemplate(waypoint)}
-    ${createEventDetailsTemplate(waypoint, offersModel)}
+    ${createEventDetailsTemplate(waypoint, allTypeOffers)}
   </form>`;
 
 
 export default class EditView extends AbstractView {
   #waypoint = null;
-  #offersModel = null;
+  #allTypeOffers = null;
   #handleEditClick = null;
 
-  constructor({waypoint, offersModel, onEditClick}) {
+  constructor({waypoint, allTypeOffers, onEditClick}) {
     super();
     this.#waypoint = waypoint;
-    this.#offersModel = offersModel;
+    this.#allTypeOffers = allTypeOffers;
     this.#handleEditClick = onEditClick;
 
     this.element.querySelector('.event__rollup-btn')
@@ -28,7 +28,7 @@ export default class EditView extends AbstractView {
   }
 
   get template() {
-    return createEditTemplate(this.#waypoint, this.#offersModel);
+    return createEditTemplate(this.#waypoint, this.#allTypeOffers);
   }
 
   #editClickHandler = (evt) => {

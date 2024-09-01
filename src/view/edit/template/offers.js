@@ -1,8 +1,8 @@
 import { hasObjWithId } from '/src/util';
 
 
-const isChecked = (id, offers) =>
-  hasObjWithId(offers, id) ? 'checked' : '';
+const isChecked = (id, checkedOffers) =>
+  hasObjWithId(checkedOffers, id) ? 'checked' : '';
 
 
 const createOfferTemplate = ({id, title, price}, checkedOffers) =>
@@ -17,17 +17,14 @@ const createOfferTemplate = ({id, title, price}, checkedOffers) =>
   </div>`;
 
 
-const createOffersTemplate = ({type, offers}, offersModel) => {
-  const allOffers = offersModel.getOffers(type);
-
-  return (`<section class="event__section  event__section--offers">
+const createOffersTemplate = (checkedOffers, allTypeOffers) =>
+  `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
-      ${allOffers.map((offer) => createOfferTemplate(offer, offers)).join('')}
+      ${allTypeOffers.map((offer) => createOfferTemplate(offer, checkedOffers)).join('')}
     </div>
-  </section>`);
-};
+  </section>`;
 
 
 export default createOffersTemplate;

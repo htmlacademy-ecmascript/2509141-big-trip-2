@@ -2,12 +2,12 @@ import createDestinationTemplate from './destination';
 import createOffersTemplate from './offers';
 
 
-const createEventDetailsTemplate = (waypoint, offersModel) => {
-  const hasOffers = offersModel.getOffers(waypoint.type).length > 0;
-  const offersTemplate = hasOffers ? createOffersTemplate(waypoint, offersModel) : '';
+const createEventDetailsTemplate = ({offers, destination}, allTypeOffers) => {
+  const hasOffers = allTypeOffers.length > 0;
+  const offersTemplate = hasOffers ? createOffersTemplate(offers, allTypeOffers) : '';
 
-  const hasDestination = waypoint.destination;
-  const destinationTemplate = hasDestination ? createDestinationTemplate(waypoint.destination) : '';
+  const hasDestination = !!destination;
+  const destinationTemplate = hasDestination ? createDestinationTemplate(destination) : '';
 
   return `<section class="event__details">
             ${offersTemplate}
