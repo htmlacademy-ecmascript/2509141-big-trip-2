@@ -32,6 +32,9 @@ const getObj = (array, key, value) =>
 const hasValueWithKeyInArray = (array, key, value) =>
   !!getObj(array, key, value);
 
+const hasObjWithId = (array, id) =>
+  hasValueWithKeyInArray(array, 'id', id);
+
 
 export {
   getRandomArrayElement,
@@ -41,5 +44,6 @@ export {
   getObj,
   humanizeDate,
   hasValueWithKeyInArray,
-  isEscapeKey
+  isEscapeKey,
+  hasObjWithId
 };
