@@ -3,9 +3,9 @@ import createEventHeaderTemplate from './template/event-header';
 import createEventDetailsTemplate from './template/event-details';
 
 
-const createEditTemplate = (waypoint, allTypeOffers) =>
+const createEditTemplate = (waypoint, allTypeOffers, destinations) =>
   `<form class="event event--edit" action="#" method="post">
-    ${createEventHeaderTemplate(waypoint)}
+    ${createEventHeaderTemplate(waypoint, destinations)}
     ${createEventDetailsTemplate(waypoint, allTypeOffers)}
   </form>`;
 
@@ -14,10 +14,12 @@ export default class EditView extends AbstractView {
   #waypoint = null;
   #allTypeOffers = null;
   #handleEditClick = null;
+  #destinations = [];
 
-  constructor({waypoint, allTypeOffers, onEditClick}) {
+  constructor({waypoint, allTypeOffers, destinations, onEditClick}) {
     super();
     this.#waypoint = waypoint;
+    this.#destinations = destinations;
     this.#allTypeOffers = allTypeOffers;
     this.#handleEditClick = onEditClick;
 
@@ -28,7 +30,7 @@ export default class EditView extends AbstractView {
   }
 
   get template() {
-    return createEditTemplate(this.#waypoint, this.#allTypeOffers);
+    return createEditTemplate(this.#waypoint, this.#allTypeOffers, this.#destinations);
   }
 
   #editClickHandler = (evt) => {

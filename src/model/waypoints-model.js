@@ -1,8 +1,9 @@
-import { getRandomWaypoint } from '/src/mock/waypoints';
+import getRandomWaypoint from '/src/mock/waypoints';
 import { WAYPOINT_COUNT } from '/src/const';
 
+
 export default class WaypointsModel {
-  #waypoints = null;
+  #waypoints = [];
 
   constructor(offersModel, destinationsModel) {
     this.#waypoints = Array.from(

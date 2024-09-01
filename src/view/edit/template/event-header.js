@@ -4,11 +4,11 @@ import { createCancelButtonTemplate, createRollupButtonTemplate } from './button
 import createEventTypeTemplate from './event-type';
 
 
-const createOptionTemplate = (name) =>
+const createOptionTemplate = ({name}) =>
   `<option value="${name}"></option>`;
 
 
-const createEventHeaderTemplate = (waypoint) => {
+const createEventHeaderTemplate = (waypoint, destinations) => {
   const { id, type, destination, 'base_price': price } = waypoint;
 
   const start = humanizeDate(waypoint['date_from'], DateTimeFormat.EDIT);
@@ -16,8 +16,7 @@ const createEventHeaderTemplate = (waypoint) => {
 
   const name = destination?.name ?? '';
 
-  // ❓ Как правильно составлять список доступных пунктов назначения?
-  const options = createOptionTemplate(name);
+  const options = destinations.map(createOptionTemplate);
 
   return (`
     <header class="event__header">

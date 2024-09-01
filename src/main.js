@@ -20,6 +20,7 @@ const siteEventsSection = document.querySelector('.trip-events');
 const eventsPresenter = new EventsPresenter({
   container: siteEventsSection,
   waypointsModel,
-  offersModel
+  offersModel,
+  destinationsModel
 });
 eventsPresenter.init();

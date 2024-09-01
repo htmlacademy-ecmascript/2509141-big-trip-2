@@ -12,13 +12,15 @@ export default class Presenter {
 
   #waypointsModel = null;
   #offersModel = null;
+  #destinationsModel = null;
 
   #waypoints = [];
 
-  constructor({container, waypointsModel, offersModel}) {
+  constructor({container, waypointsModel, offersModel, destinationsModel}) {
     this.#container = container;
-    this.#waypointsModel = waypointsModel;
     this.#offersModel = offersModel;
+    this.#waypointsModel = waypointsModel;
+    this.#destinationsModel = destinationsModel;
   }
 
 
@@ -40,7 +42,9 @@ export default class Presenter {
     }
   }
 
-  #renderWaypoint(waypoint, offersModel) {
+  // ❓ Слишком длинный метод со сложной структурой.
+  // Возможно, стоит его тоже перенести в другой файл?
+  #renderWaypoint(waypoint) {
     const escKeyDownHandler = (evt) => {
       if (isEscapeKey(evt)) {
         evt.preventDefault();
@@ -57,10 +61,10 @@ export default class Presenter {
       }
     });
 
-    const allTypeOffers = offersModel.getOffers(waypoint.type);
     const editFormComponent = new EditView({
       waypoint,
-      allTypeOffers,
+      allTypeOffers: this.#offersModel.getOffers(waypoint.type),
+      destinations: this.#destinationsModel.destinations,
       onEditClick: () => {
         replaceToWaypoint();
         document.removeEventListener('keydown', escKeyDownHandler);
