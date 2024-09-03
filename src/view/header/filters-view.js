@@ -28,7 +28,22 @@ const createFiltersTemplate = () =>
 
 
 export default class FiltersView extends AbstractView {
+  #handleFilterClick = null;
+
+  constructor(onFilterClick) {
+    super();
+    this.#handleFilterClick = onFilterClick;
+
+    this.element.addEventListener('click', this.#filterClickHandler);
+  }
+
   get template() {
     return createFiltersTemplate();
   }
+
+  #filterClickHandler = (evt) => {
+    if (evt.target instanceof HTMLLabelElement) {
+      this.#handleFilterClick(evt.target.textContent);
+    }
+  };
 }

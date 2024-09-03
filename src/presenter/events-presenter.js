@@ -1,20 +1,25 @@
-import { render, replace } from '/src/framework/render.js';
+import { render, replace, remove } from '/src/framework/render.js';
 import { isEscapeKey } from '../util.js';
 import EditView from '../view/edit/edit-view.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import WaypointView from '../view/list/waypoint-view';
+import EmptyView from '../view/list/empty-view.js';
+import { DEFAULT_FILTER } from '../const.js';
 
 
 export default class Presenter {
-  #list = new ListView();
   #container = null;
+  #sortView = null;
+  #emptyView = null;
+  #listView = new ListView();
 
   #waypointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
 
   #waypoints = [];
+  #currentFilter = DEFAULT_FILTER;
 
   constructor({container, waypointsModel, offersModel, destinationsModel}) {
     this.#container = container;
@@ -25,18 +30,43 @@ export default class Presenter {
 
 
   init() {
-    this.#waypoints = [...this.#waypointsModel.waypoints];
+    // this.#waypoints = [...this.#waypointsModel.waypoints];
 
-    this.#renderSortView();
-    this.#renderWaypoints();
+    this.#renderAll();
+  }
+
+  updateFilter(filter = DEFAULT_FILTER) {
+    this.#removeAll();
+    this.#renderAll(filter);
+  }
+
+  #renderAll(filter = DEFAULT_FILTER) {
+    if (this.#waypoints.length > 0) {
+      this.#renderSortView();
+      this.#renderWaypoints();
+    } else {
+      this.#renderEmptyView(filter);
+    }
+  }
+
+  #removeAll() {
+    remove(this.#sortView);
+    remove(this.#listView);
+    remove(this.#emptyView);
+  }
+
+  #renderEmptyView(filter = DEFAULT_FILTER) {
+    this.#emptyView = new EmptyView(filter);
+    render(this.#emptyView, this.#container);
   }
 
   #renderSortView() {
-    render(new SortView(), this.#container);
+    this.#sortView = new SortView();
+    render(this.#sortView, this.#container);
   }
 
   #renderWaypoints() {
-    render(this.#list, this.#container);
+    render(this.#listView, this.#container);
     for (let i = 0; i < this.#waypoints.length; i++) {
       this.#renderWaypoint(this.#waypoints[i], this.#offersModel);
     }
@@ -81,6 +111,6 @@ export default class Presenter {
 
     render(
       waypointComponent,
-      this.#list.element);
+      this.#listView.element);
   }
 }

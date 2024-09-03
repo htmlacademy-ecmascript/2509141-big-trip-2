@@ -7,13 +7,22 @@ export default class HeaderPresenter {
   #container = null;
   #siteFiltersContainer = null;
 
-  constructor({container}) {
+  #eventsPresenter = null;
+
+  constructor({container, eventsPresenter}) {
     this.#container = container;
     this.#siteFiltersContainer = this.#container.querySelector('.trip-controls__filters');
+
+    this.#eventsPresenter = eventsPresenter;
   }
 
   init() {
     render(new TripInfoView(), this.#container, RenderPosition.AFTERBEGIN);
-    render(new FiltersView(), this.#siteFiltersContainer);
+
+    render(new FiltersView(this.#onFilterClick), this.#siteFiltersContainer);
   }
+
+  #onFilterClick = (filter) => {
+    this.#eventsPresenter.updateFilter(filter);
+  };
 }
