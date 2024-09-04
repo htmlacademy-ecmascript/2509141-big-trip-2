@@ -30,22 +30,25 @@ export default class Presenter {
 
 
   init() {
-    // this.#waypoints = [...this.#waypointsModel.waypoints];
+    this.#waypoints = [...this.#waypointsModel.waypoints];
 
     this.#renderAll();
   }
 
+
   updateFilter(filter = DEFAULT_FILTER) {
+    this.#currentFilter = filter;
+
     this.#removeAll();
     this.#renderAll(filter);
   }
 
-  #renderAll(filter = DEFAULT_FILTER) {
+  #renderAll() {
     if (this.#waypoints.length > 0) {
       this.#renderSortView();
       this.#renderWaypoints();
     } else {
-      this.#renderEmptyView(filter);
+      this.#renderEmptyView(this.#currentFilter);
     }
   }
 
@@ -55,8 +58,8 @@ export default class Presenter {
     remove(this.#emptyView);
   }
 
-  #renderEmptyView(filter = DEFAULT_FILTER) {
-    this.#emptyView = new EmptyView(filter);
+  #renderEmptyView() {
+    this.#emptyView = new EmptyView(this.#currentFilter);
     render(this.#emptyView, this.#container);
   }
 

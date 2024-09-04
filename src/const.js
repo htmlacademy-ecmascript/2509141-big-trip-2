@@ -1,10 +1,10 @@
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
 const Filters = {
-  EVERYTHING: 'Everything',
-  PAST: 'Past',
-  PRESENT: 'Present',
-  FUTURE: 'Future'
+  EVERYTHING: 'everything',
+  PAST: 'past',
+  PRESENT: 'present',
+  FUTURE: 'future'
 };
 const DEFAULT_FILTER = Filters.EVERYTHING;
 

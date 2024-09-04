@@ -9,17 +9,21 @@ export default class HeaderPresenter {
 
   #eventsPresenter = null;
 
-  constructor({container, eventsPresenter}) {
+  #waypointsModel = null;
+
+  constructor({container, waypointsModel, eventsPresenter}) {
     this.#container = container;
     this.#siteFiltersContainer = this.#container.querySelector('.trip-controls__filters');
 
     this.#eventsPresenter = eventsPresenter;
+
+    this.#waypointsModel = waypointsModel;
   }
 
   init() {
     render(new TripInfoView(), this.#container, RenderPosition.AFTERBEGIN);
 
-    render(new FiltersView(this.#onFilterClick), this.#siteFiltersContainer);
+    render(new FiltersView(this.#waypointsModel.availableFilters, this.#onFilterClick), this.#siteFiltersContainer);
   }
 
   #onFilterClick = (filter) => {
