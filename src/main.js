@@ -9,17 +9,21 @@ const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
 const waypointsModel = new WaypointsModel(offersModel, destinationsModel);
 
-const siteHeaderElement = document.querySelector('.trip-main');
-const headerPresenter = new HeaderPresenter({
-  container: siteHeaderElement,
-  waypointsModel
-});
-headerPresenter.init();
-
 const siteEventsSection = document.querySelector('.trip-events');
 const eventsPresenter = new EventsPresenter({
   container: siteEventsSection,
   waypointsModel,
-  offersModel
+  offersModel,
+  destinationsModel
 });
 eventsPresenter.init();
+
+const siteHeaderElement = document.querySelector('.trip-main');
+const headerPresenter = new HeaderPresenter({
+  container: siteHeaderElement,
+  waypointsModel,
+  eventsPresenter
+});
+headerPresenter.init();
+
+

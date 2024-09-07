@@ -1,46 +1,84 @@
-import { render, replace } from '/src/framework/render.js';
+import { render, replace, remove } from '/src/framework/render.js';
 import { isEscapeKey } from '../util.js';
 import EditView from '../view/edit/edit-view.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import WaypointView from '../view/list/waypoint-view';
+import EmptyView from '../view/list/empty-view.js';
+import { DEFAULT_FILTER } from '../const.js';
 
 
 export default class Presenter {
-  #list = new ListView(); // ❓ Почему это здесь, а не в конструкторе или init()?
   #container = null;
+  #sortView = null;
+  #emptyView = null;
+  #listView = new ListView();
 
   #waypointsModel = null;
   #offersModel = null;
+  #destinationsModel = null;
 
   #waypoints = [];
+  #currentFilter = DEFAULT_FILTER;
 
-  constructor({container, waypointsModel, offersModel}) {
+
+  constructor({container, waypointsModel, offersModel, destinationsModel}) {
     this.#container = container;
-    this.#waypointsModel = waypointsModel;
     this.#offersModel = offersModel;
+    this.#waypointsModel = waypointsModel;
+    this.#destinationsModel = destinationsModel;
   }
 
 
   init() {
     this.#waypoints = [...this.#waypointsModel.waypoints];
 
-    this.#renderSortView();
-    this.#renderWaypoints();
+    this.#renderAll();
   }
 
-  #renderSortView() {
-    render(new SortView(), this.#container);
+
+  updateFilter(filter = DEFAULT_FILTER) {
+    this.#currentFilter = filter;
+
+    this.#removeAll();
+    this.#renderAll();
   }
 
-  #renderWaypoints() {
-    render(this.#list, this.#container);
-    for (let i = 0; i < this.#waypoints.length; i++) {
-      this.#render(this.#waypoints[i], this.#offersModel);
+  #renderAll() {
+    if (this.#waypoints.length > 0) {
+      this.#renderSortView();
+      this.#renderWaypoints();
+    } else {
+      this.#renderEmptyView(this.#currentFilter);
     }
   }
 
-  #render(waypoint, offersModel) {
+  #removeAll() {
+    remove(this.#sortView);
+    remove(this.#listView);
+    remove(this.#emptyView);
+  }
+
+  #renderEmptyView() {
+    this.#emptyView = new EmptyView(this.#currentFilter);
+    render(this.#emptyView, this.#container);
+  }
+
+  #renderSortView() {
+    this.#sortView = new SortView();
+    render(this.#sortView, this.#container);
+  }
+
+  #renderWaypoints() {
+    render(this.#listView, this.#container);
+    for (let i = 0; i < this.#waypoints.length; i++) {
+      this.#renderWaypoint(this.#waypoints[i], this.#offersModel);
+    }
+  }
+
+  // ❓ Слишком длинный метод со сложной структурой.
+  // Возможно, стоит его тоже перенести в другой файл?
+  #renderWaypoint(waypoint) {
     const escKeyDownHandler = (evt) => {
       if (isEscapeKey(evt)) {
         evt.preventDefault();
@@ -57,12 +95,10 @@ export default class Presenter {
       }
     });
 
-    // ❓ Для реализации переключения между View пришлось объединить множество компонентов в один EditView.
-    // В результате он страшно раздулся и выглядит непотребно.
-    // С этим можно что-то сделать?
     const editFormComponent = new EditView({
       waypoint,
-      offersModel,
+      allTypeOffers: this.#offersModel.getOffers(waypoint.type),
+      destinations: this.#destinationsModel.destinations,
       onEditClick: () => {
         replaceToWaypoint();
         document.removeEventListener('keydown', escKeyDownHandler);
@@ -79,6 +115,6 @@ export default class Presenter {
 
     render(
       waypointComponent,
-      this.#list.element);
+      this.#listView.element);
   }
 }

@@ -28,8 +28,4 @@ export default class OffersModel {
 
     return offer;
   }
-
-  hasOfferWithId(offers, id) {
-    return !!getObj(offers, 'id', id);
-  }
 }

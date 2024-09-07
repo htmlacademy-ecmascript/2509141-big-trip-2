@@ -27,4 +27,4 @@ const getRandomWaypoint = (getRandomOffers, getRandomDestination) => {
 };
 
 
-export { getRandomWaypoint };
+export default getRandomWaypoint;
