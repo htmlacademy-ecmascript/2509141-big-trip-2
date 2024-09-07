@@ -21,6 +21,7 @@ export default class Presenter {
   #waypoints = [];
   #currentFilter = DEFAULT_FILTER;
 
+
   constructor({container, waypointsModel, offersModel, destinationsModel}) {
     this.#container = container;
     this.#offersModel = offersModel;
@@ -40,7 +41,7 @@ export default class Presenter {
     this.#currentFilter = filter;
 
     this.#removeAll();
-    this.#renderAll(filter);
+    this.#renderAll();
   }
 
   #renderAll() {

@@ -1,6 +1,5 @@
-import { render, RenderPosition } from '/src/framework/render.js';
+import { render } from '/src/framework/render.js';
 import FiltersView from '../view/header/filters-view';
-import TripInfoView from '../view/header/trip-info-view';
 
 
 export default class HeaderPresenter {
@@ -21,12 +20,11 @@ export default class HeaderPresenter {
   }
 
   init() {
-    render(new TripInfoView(), this.#container, RenderPosition.AFTERBEGIN);
-
     render(new FiltersView(this.#waypointsModel.availableFilters, this.#onFilterClick), this.#siteFiltersContainer);
   }
 
   #onFilterClick = (filter) => {
+    // ❓ Подобная связь презентеров друг с другом допустима?
     this.#eventsPresenter.updateFilter(filter);
   };
 }
