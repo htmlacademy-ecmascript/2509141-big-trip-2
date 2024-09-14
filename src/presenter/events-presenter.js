@@ -1,11 +1,9 @@
-import { render, replace, remove } from '/src/framework/render.js';
-import { isEscapeKey } from '../util.js';
-import EditView from '../view/edit/edit-view.js';
+import { render, remove } from '/src/framework/render.js';
+import { DEFAULT_FILTER } from '../const.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
-import WaypointView from '../view/list/waypoint-view';
 import EmptyView from '../view/list/empty-view.js';
-import { DEFAULT_FILTER } from '../const.js';
+import WaypointPresenter from './waypoint-presenter.js';
 
 
 export default class Presenter {
@@ -19,6 +17,7 @@ export default class Presenter {
   #destinationsModel = null;
 
   #waypoints = [];
+  #waypointPresenters = new Map();
   #currentFilter = DEFAULT_FILTER;
 
 
@@ -76,45 +75,19 @@ export default class Presenter {
     }
   }
 
-  // ❓ Слишком длинный метод со сложной структурой.
-  // Возможно, стоит его тоже перенести в другой файл?
   #renderWaypoint(waypoint) {
-    const escKeyDownHandler = (evt) => {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceToWaypoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const waypointComponent = new WaypointView({
-      waypoint,
-      onEditClick: () => {
-        replaceToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const waypointPresenter = new WaypointPresenter({
+      container: this.#listView.element,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel
     });
 
-    const editFormComponent = new EditView({
-      waypoint,
-      allTypeOffers: this.#offersModel.getOffers(waypoint.type),
-      destinations: this.#destinationsModel.destinations,
-      onEditClick: () => {
-        replaceToWaypoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    });
+    waypointPresenter.init(waypoint);
+    this.#waypointPresenters.set(waypoint.id, waypointPresenter);
+  }
 
-    function replaceToForm() {
-      replace(editFormComponent, waypointComponent);
-    }
-
-    function replaceToWaypoint() {
-      replace(waypointComponent, editFormComponent);
-    }
-
-    render(
-      waypointComponent,
-      this.#listView.element);
+  #clearWaypointList() {
+    this.#waypointPresenters.forEach((presenter) => presenter.destroy());
+    this.#waypointPresenters.clear();
   }
 }
