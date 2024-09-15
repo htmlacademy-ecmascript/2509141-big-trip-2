@@ -16,11 +16,13 @@ export default class WaypointPresenter {
   #waypointComponent = null;
   #editFormComponent = null;
 
+  #handleDataChange = null;
 
-  constructor({container, offersModel, destinationsModel}) {
+  constructor({container, offersModel, destinationsModel, onDataChange}) {
     this.#container = container;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+    this.#handleDataChange = onDataChange;
   }
 
 
@@ -63,7 +65,8 @@ export default class WaypointPresenter {
   #setWaypointComponent() {
     this.#waypointComponent = new WaypointView({
       waypoint: this.#waypoint,
-      onEditClick: () => this.#replaceToForm()
+      onEditClick: () => this.#replaceToForm(),
+      onFavoriteClick: this.#handleFavoriteClick
     });
   }
 
@@ -94,11 +97,18 @@ export default class WaypointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  #handleFavoriteClick = () => {
+    this.#handleDataChange({...this.#waypoint, 'is_favorite': !this.#waypoint['is_favorite']});
+  };
+
   #handleEditClick = () => {
     this.#replaceToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (evt) => {
+    evt.preventDefault();
+
+    this.#handleDataChange();
     this.#replaceToWaypoint();
   };
 }

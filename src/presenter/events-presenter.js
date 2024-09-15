@@ -1,5 +1,6 @@
 import { render, remove } from '/src/framework/render.js';
 import { DEFAULT_FILTER } from '../const.js';
+import { updateItem } from '../util.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
@@ -43,6 +44,7 @@ export default class Presenter {
     this.#renderAll();
   }
 
+
   #renderAll() {
     if (this.#waypoints.length > 0) {
       this.#renderSortView();
@@ -71,15 +73,21 @@ export default class Presenter {
   #renderWaypoints() {
     render(this.#listView, this.#container);
     for (let i = 0; i < this.#waypoints.length; i++) {
-      this.#renderWaypoint(this.#waypoints[i], this.#offersModel);
+      this.#renderWaypoint(this.#waypoints[i]);
     }
   }
+
+  #handleWaypointChange = (updatedWaypoint) => {
+    this.#waypoints = updateItem(this.#waypoints, updatedWaypoint);
+    this.#waypointPresenters.get(updatedWaypoint.id).init(updatedWaypoint);
+  };
 
   #renderWaypoint(waypoint) {
     const waypointPresenter = new WaypointPresenter({
       container: this.#listView.element,
       offersModel: this.#offersModel,
-      destinationsModel: this.#destinationsModel
+      destinationsModel: this.#destinationsModel,
+      onDataChange: this.#handleWaypointChange
     });
 
     waypointPresenter.init(waypoint);

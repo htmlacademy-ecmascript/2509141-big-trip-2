@@ -36,6 +36,10 @@ const hasObjWithId = (array, id) =>
   hasValueWithKeyInArray(array, 'id', id);
 
 
+const updateItem = (items, updated) =>
+  items.map((item) => item.id === updated.id ? updated : item);
+
+
 export {
   getRandomArrayElement,
   getRandomIntInRange,
@@ -45,5 +49,6 @@ export {
   humanizeDate,
   hasValueWithKeyInArray,
   isEscapeKey,
-  hasObjWithId
+  hasObjWithId,
+  updateItem
 };
