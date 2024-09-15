@@ -83,6 +83,7 @@ const createWaypointTemplate = (waypoint) => {
 
 export default class WaypointView extends AbstractView {
   #waypoint = null;
+
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
@@ -103,7 +104,7 @@ export default class WaypointView extends AbstractView {
     return createWaypointTemplate(this.#waypoint);
   }
 
-  // ❓ Функции построены по образу и подобию аналогичных из taskmanager-demo
+  // ❓ Функции построены по образу и подобию аналогичных из taskmanager-demo (коммит 5.1.6 - 36dbc3d)
   // Зачем обработчики клика содержат evt.preventDefault()?
   // Ведь <button> - это не <a> и не <form>, у кнопки нет действия по умолчанию. Разве нет?
   #editClickHandler = (evt) => {

@@ -17,8 +17,6 @@ export default class WaypointsModel {
     return this.#waypoints;
   }
 
-  // ❓ Уместен расчёт доступных фильтров в WaypointsModel?
-  // Всё же он использует список всех точек.
   get availableFilters() {
     const past = this.#hasProperWaypoints(this.#isPast);
     const present = this.#hasProperWaypoints(this.#isPresent);

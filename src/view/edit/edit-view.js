@@ -3,7 +3,6 @@ import createEventHeaderTemplate from './template/event-header';
 import createEventDetailsTemplate from './template/event-details';
 
 
-// ❓ Перенёс createTemplate функции в отдельные модули. Всё правильно?
 const createEditTemplate = (waypoint, allTypeOffers, destinations) =>
   `<form class="event event--edit" action="#" method="post">
     ${createEventHeaderTemplate(waypoint, destinations)}

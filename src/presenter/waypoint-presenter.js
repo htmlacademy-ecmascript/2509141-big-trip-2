@@ -10,14 +10,12 @@ const Mode = {
 };
 
 export default class WaypointPresenter {
-  #waypointsModel = null;
+  #waypoint = null;
+
   #offersModel = null;
   #destinationsModel = null;
 
   #container = null;
-
-  #waypoint = null;
-
   #waypointComponent = null;
   #editFormComponent = null;
 
@@ -25,6 +23,7 @@ export default class WaypointPresenter {
   #handleModeChange = null;
 
   #mode = Mode.DEFAULT;
+
 
   constructor({container, offersModel, destinationsModel, onDataChange, onModeChange}) {
     this.#container = container;
@@ -65,17 +64,10 @@ export default class WaypointPresenter {
       return;
     }
 
-    if (this.#mode === Mode.DEFAULT) {
-      replace(this.#waypointComponent, prevWaypointComponent);
-    }
-
-    if (this.#mode === Mode.EDITING) {
-      replace(this.#editFormComponent, prevEditFormComponent);
-    }
-
-    remove(prevWaypointComponent);
-    remove(prevEditFormComponent);
+    this.#renderWaypointComponent(prevWaypointComponent);
+    this.#renderEditFormComponent(prevEditFormComponent);
   }
+
 
   #setWaypointComponent() {
     this.#waypointComponent = new WaypointView({
@@ -93,6 +85,24 @@ export default class WaypointPresenter {
       onEditClick: () => this.#replaceToWaypoint()
     });
   }
+
+
+  #renderWaypointComponent(prevWaypointComponent) {
+    this.#renderComponent(Mode.DEFAULT, this.#waypointComponent, prevWaypointComponent);
+  }
+
+  #renderEditFormComponent(prevEditFormComponent) {
+    this.#renderComponent(Mode.EDITING, this.#editFormComponent, prevEditFormComponent);
+  }
+
+  #renderComponent(mode, newComponent, oldComponent) {
+    if (this.#mode === mode) {
+      replace(newComponent, oldComponent);
+    }
+
+    remove(oldComponent);
+  }
+
 
   #escKeyDownHandler = (evt) => {
     if (isEscapeKey(evt)) {
