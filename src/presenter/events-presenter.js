@@ -82,12 +82,17 @@ export default class Presenter {
     this.#waypointPresenters.get(updatedWaypoint.id).init(updatedWaypoint);
   };
 
+  #handleModeChange = () => {
+    this.#waypointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   #renderWaypoint(waypoint) {
     const waypointPresenter = new WaypointPresenter({
       container: this.#listView.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
-      onDataChange: this.#handleWaypointChange
+      onDataChange: this.#handleWaypointChange,
+      onModeChange: this.#handleModeChange
     });
 
     waypointPresenter.init(waypoint);

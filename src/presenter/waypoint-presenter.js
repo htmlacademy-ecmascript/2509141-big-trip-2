@@ -4,6 +4,11 @@ import EditView from '../view/edit/edit-view.js';
 import WaypointView from '../view/list/waypoint-view';
 
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class WaypointPresenter {
   #waypointsModel = null;
   #offersModel = null;
@@ -17,12 +22,16 @@ export default class WaypointPresenter {
   #editFormComponent = null;
 
   #handleDataChange = null;
+  #handleModeChange = null;
 
-  constructor({container, offersModel, destinationsModel, onDataChange}) {
+  #mode = Mode.DEFAULT;
+
+  constructor({container, offersModel, destinationsModel, onDataChange, onModeChange}) {
     this.#container = container;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
 
@@ -35,6 +44,12 @@ export default class WaypointPresenter {
   destroy() {
     remove(this.#waypointComponent);
     remove(this.#editFormComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceToWaypoint();
+    }
   }
 
 
@@ -50,11 +65,11 @@ export default class WaypointPresenter {
       return;
     }
 
-    if (this.#container.contains(prevWaypointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#waypointComponent, prevWaypointComponent);
     }
 
-    if (this.#container.contains(prevEditFormComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#editFormComponent, prevEditFormComponent);
     }
 
@@ -90,11 +105,14 @@ export default class WaypointPresenter {
   #replaceToForm() {
     replace(this.#editFormComponent, this.#waypointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceToWaypoint() {
     replace(this.#waypointComponent, this.#editFormComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleFavoriteClick = () => {
