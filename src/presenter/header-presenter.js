@@ -24,7 +24,6 @@ export default class HeaderPresenter {
   }
 
   #onFilterClick = (filter) => {
-    // ❓ Подобная связь презентеров друг с другом допустима?
     this.#eventsPresenter.updateFilter(filter);
   };
 }

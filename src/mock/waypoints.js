@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 import { TYPES } from '../const';
 import { getRandomArrayElement, getRandomBool, getRandomIntInRange } from '../util';
 
@@ -15,7 +16,7 @@ const getRandomWaypoint = (getRandomOffers, getRandomDestination) => {
   const type = getRandomArrayElement(TYPES);
 
   return {
-    'id': getRandomIntInRange(0, 10),
+    'id': nanoid(),
     'type': type,
     'base_price': getRandomIntInRange(20, 2000),
     'is_favorite': getRandomBool(),

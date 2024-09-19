@@ -83,23 +83,37 @@ const createWaypointTemplate = (waypoint) => {
 
 export default class WaypointView extends AbstractView {
   #waypoint = null;
-  #handleEditClick = null;
 
-  constructor({waypoint, onEditClick}) {
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
+
+  constructor({waypoint, onEditClick, onFavoriteClick}) {
     super();
     this.#waypoint = waypoint;
+
     this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template() {
     return createWaypointTemplate(this.#waypoint);
   }
 
+  // ❓ Функции построены по образу и подобию аналогичных из taskmanager-demo (коммит 5.1.6 - 36dbc3d)
+  // Зачем обработчики клика содержат evt.preventDefault()?
+  // Ведь <button> - это не <a> и не <form>, у кнопки нет действия по умолчанию. Разве нет?
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
   };
 }
