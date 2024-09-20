@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 import { TYPES } from '../const';
-import { getRandomArrayElement, getRandomBool, getRandomIntInRange } from '../util';
+import { getRandomArrayElement, getRandomBool, getRandomIntInRange } from '/src/util/random';
 
 
 const getRandomTime = () => {

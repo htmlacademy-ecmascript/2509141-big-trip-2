@@ -1,4 +1,4 @@
-import { humanizeDate } from '/src/util';
+import { humanizeDate } from '/src/util/util';
 import { DateTimeFormat } from '/src/const';
 import { createCancelButtonTemplate, createRollupButtonTemplate } from './buttons';
 import createEventTypeTemplate from './event-type';
