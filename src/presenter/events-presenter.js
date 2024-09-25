@@ -38,10 +38,10 @@ export default class Presenter {
 
 
     // TEMP: для тестирования сортировки по дате
-    let od = this.#waypoints[1]['date_from'];
-    this.#waypoints[1]['date_from'] = od.subtract(1, 'day');
-    od = this.#waypoints[2]['date_from'];
-    this.#waypoints[2]['date_from'] = od.subtract(2, 'day');
+    let od = this.#waypoints[1]['date_from'].getDate();
+    this.#waypoints[1]['date_from'].setDate(od - 1);
+    od = this.#waypoints[2]['date_from'].getDate();
+    this.#waypoints[2]['date_from'].setDate(od - 2);
 
 
     this.#sort(DEFAULT_SORT_TYPE);

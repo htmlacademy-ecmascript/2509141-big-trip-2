@@ -15,12 +15,10 @@ export default class EditView extends AbstractStatefulView {
   #handleEditClick = null;
   #handleFormSubmit = null;
   #destinations = [];
-  #waypoint = null;
 
   constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit}) {
     super();
     this._setState(EditView.parseWaypointToState(waypoint));
-    this.#waypoint = waypoint;
     this.#destinations = destinations;
     this.#allTypeOffers = allTypeOffers;
     this.#handleEditClick = onEditClick;
@@ -33,7 +31,6 @@ export default class EditView extends AbstractStatefulView {
   }
 
   get template() {
-    // return createEditTemplate(this.#waypoint, this.#allTypeOffers, this.#destinations);
     return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations);
   }
 
@@ -51,8 +48,7 @@ export default class EditView extends AbstractStatefulView {
 
 
   static parseWaypointToState(waypoint) {
-    // return {...waypoint};
-    return waypoint;
+    return {...waypoint};
   }
 
   static parseStateToWaypoint(state) {

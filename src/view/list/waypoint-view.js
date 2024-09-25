@@ -15,7 +15,7 @@ const createOfferTemplate = ({ title, price }) =>
 
 const formatDuration = (start, end) => {
   dayjs.extend(durationAPI);
-  const duration = dayjs.duration(end.diff(start));
+  const duration = dayjs.duration(dayjs(end).diff(start));
 
   if (duration.days() > 0) {
     return duration.format('DD[D] HH[H] mm[M]');
