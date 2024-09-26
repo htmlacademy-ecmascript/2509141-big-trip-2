@@ -24,14 +24,18 @@ export default class EditView extends AbstractStatefulView {
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#editClickHandler);
-
-    this.element.addEventListener('submit', this.#formSubmitHandler);
+    this._restoreHandlers();
   }
 
   get template() {
     return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations);
+  }
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
+
+    this.element.addEventListener('submit', this.#formSubmitHandler);
   }
 
   #editClickHandler = (evt) => {
