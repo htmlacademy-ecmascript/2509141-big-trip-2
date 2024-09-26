@@ -1,5 +1,6 @@
 import generateMockOffers from '../mock/offers';
-import { getObj, getRandomBool } from '../util';
+import { getRandomBool } from '../util/random';
+import { getObj } from '../util/util';
 
 
 export default class OffersModel {

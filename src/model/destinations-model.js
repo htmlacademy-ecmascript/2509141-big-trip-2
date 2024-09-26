@@ -1,5 +1,6 @@
 import getAllDestinations from '../mock/destinations';
-import { getRandomArrayElement, getObj } from '../util';
+import { getRandomArrayElement } from '../util/random';
+import { getObj } from '../util/util';
 
 
 export default class DestinationsModel {

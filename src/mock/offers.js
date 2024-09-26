@@ -1,5 +1,6 @@
 import { TYPES } from '../const';
-import { getRandomIntInRange, createIdGeneratorInRange } from '../util';
+import { createIdGeneratorInRange } from '../util/util';
+import { getRandomIntInRange } from '../util/random';
 
 
 const createMockOffer = (generateId, type) => {

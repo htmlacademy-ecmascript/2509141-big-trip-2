@@ -1,5 +1,5 @@
 import { render, replace, remove } from '/src/framework/render.js';
-import { isEscapeKey } from '../util.js';
+import { isEscapeKey } from '../util/util.js';
 import EditView from '../view/edit/edit-view.js';
 import WaypointView from '../view/list/waypoint-view';
 
