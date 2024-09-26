@@ -109,7 +109,7 @@ export default class Presenter {
       case SortType.TIME:
         this.#waypoints.sort(sortByDuration);
         break;
-      default:
+      case SortType.DAY:
         this.#waypoints.sort(sortByDate);
         break;
     }
