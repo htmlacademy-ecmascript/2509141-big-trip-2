@@ -15,9 +15,10 @@ export default class EditView extends AbstractStatefulView {
   #handleEditClick = null;
   #handleFormSubmit = null;
   #handleEventTypeChange = null;
+  #handleDestinationChange = null;
   #destinations = [];
 
-  constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onEventTypeChange}) {
+  constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onEventTypeChange, onDestinationChange}) {
     super();
     this._setState(EditView.parseWaypointToState(waypoint, allTypeOffers));
     this.#destinations = destinations;
@@ -25,6 +26,7 @@ export default class EditView extends AbstractStatefulView {
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEventTypeChange = onEventTypeChange;
+    this.#handleDestinationChange = onDestinationChange;
 
     this._restoreHandlers();
   }
@@ -40,6 +42,9 @@ export default class EditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group')
       .addEventListener('click', this.#eventTypeClickHandler);
 
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+
     this.element.addEventListener('submit', this.#formSubmitHandler);
   }
 
@@ -49,10 +54,22 @@ export default class EditView extends AbstractStatefulView {
     this.#handleEditClick();
   };
 
+  // ❓ Функции для поиска нужных offers и destinations принадлежат модели.
+  // Из представления нельзя обращаться к модели.
+  // Приходится делать это через презентер. Всё правильно?
   #eventTypeClickHandler = (evt) => {
     if (evt.target.closest('.event__type-label')) {
       const newOffers = this.#handleEventTypeChange(evt);
       this.updateElement({offers: [], allTypeOffers: newOffers});
+    }
+  };
+
+  #destinationChangeHandler = (evt) => {
+    const newDestination = this.#handleDestinationChange(evt);
+    const isCorrectDestinationName = !!newDestination;
+
+    if (isCorrectDestinationName) {
+      this.updateElement({destination: newDestination});
     }
   };
 

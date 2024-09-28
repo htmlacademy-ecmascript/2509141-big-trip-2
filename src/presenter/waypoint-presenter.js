@@ -84,7 +84,8 @@ export default class WaypointPresenter {
       allTypeOffers: this.#offersModel.getOffers(this.#waypoint.type),
       destinations: this.#destinationsModel.destinations,
       onEditClick: () => this.#replaceToWaypoint(),
-      onEventTypeChange: this.#handleEventTypeChange
+      onEventTypeChange: this.#handleEventTypeChange,
+      onDestinationChange: this.#handleDestinationChange
     });
   }
 
@@ -147,5 +148,12 @@ export default class WaypointPresenter {
     const newOffers = this.#offersModel.getOffers(newType);
 
     return newOffers; // ❓ Возврат значения у обработчиков событий допустим?
+  };
+
+  #handleDestinationChange = (evt) => {
+    const newDestinationName = evt.target.value;
+    const newDestination = this.#destinationsModel.getDestinationByName(newDestinationName);
+
+    return newDestination;
   };
 }
