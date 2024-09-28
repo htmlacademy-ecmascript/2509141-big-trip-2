@@ -59,7 +59,8 @@ export default class WaypointPresenter {
     this.#setWaypointComponent();
     this.#setEditFormComponent();
 
-    if (prevWaypointComponent === null || prevEditFormComponent === null) {
+    const isFirstRender = (prevWaypointComponent === null) || (prevEditFormComponent === null);
+    if (isFirstRender) {
       render(this.#waypointComponent, this.#container);
       return;
     }
@@ -82,7 +83,8 @@ export default class WaypointPresenter {
       waypoint: this.#waypoint,
       allTypeOffers: this.#offersModel.getOffers(this.#waypoint.type),
       destinations: this.#destinationsModel.destinations,
-      onEditClick: () => this.#replaceToWaypoint()
+      onEditClick: () => this.#replaceToWaypoint(),
+      onEventTypeChange: this.#handleEventTypeChange
     });
   }
 
@@ -138,5 +140,12 @@ export default class WaypointPresenter {
 
     this.#handleDataChange();
     this.#replaceToWaypoint();
+  };
+
+  #handleEventTypeChange = (evt) => {
+    const newType = evt.target.innerText;
+    const newOffers = this.#offersModel.getOffers(newType);
+
+    return newOffers; // ❓ Возврат значения у обработчиков событий допустим?
   };
 }

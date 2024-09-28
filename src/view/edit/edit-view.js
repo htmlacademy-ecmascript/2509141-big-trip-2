@@ -14,15 +14,17 @@ export default class EditView extends AbstractStatefulView {
   #allTypeOffers = null;
   #handleEditClick = null;
   #handleFormSubmit = null;
+  #handleEventTypeChange = null;
   #destinations = [];
 
-  constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit}) {
+  constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onEventTypeChange}) {
     super();
-    this._setState(EditView.parseWaypointToState(waypoint));
+    this._setState(EditView.parseWaypointToState(waypoint, allTypeOffers));
     this.#destinations = destinations;
     this.#allTypeOffers = allTypeOffers;
     this.#handleEditClick = onEditClick;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleEventTypeChange = onEventTypeChange;
 
     this._restoreHandlers();
   }
@@ -35,12 +37,23 @@ export default class EditView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
 
+    this.element.querySelector('.event__type-group')
+      .addEventListener('click', this.#eventTypeClickHandler);
+
     this.element.addEventListener('submit', this.#formSubmitHandler);
   }
+
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+
+  #eventTypeClickHandler = (evt) => {
+    if (evt.target.closest('.event__type-label')) {
+      const newOffers = this.#handleEventTypeChange(evt);
+      this.updateElement({offers: [], allTypeOffers: newOffers});
+    }
   };
 
   #formSubmitHandler = (evt) => {
@@ -51,11 +64,14 @@ export default class EditView extends AbstractStatefulView {
   };
 
 
-  static parseWaypointToState(waypoint) {
-    return {...waypoint};
+  static parseWaypointToState(waypoint, allTypeOffers) {
+    return {...waypoint, allTypeOffers};
   }
 
   static parseStateToWaypoint(state) {
-    return {...state};
+    const waypoint = {...state};
+    delete waypoint.allTypeOffers;
+
+    return waypoint;
   }
 }
