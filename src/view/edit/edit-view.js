@@ -35,8 +35,16 @@ export default class EditView extends AbstractStatefulView {
     return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations);
   }
 
+  reset(waypoint) {
+    const initialState = EditView.parseWaypointToState(waypoint, this.#allTypeOffers);
+    this.updateElement(initialState);
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
+
+    this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#editClickHandler);
 
     this.element.querySelector('.event__type-group')
@@ -51,7 +59,7 @@ export default class EditView extends AbstractStatefulView {
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEditClick();
+    this.#handleEditClick(evt);
   };
 
   // ❓ Функции для поиска нужных offers и destinations принадлежат модели.
