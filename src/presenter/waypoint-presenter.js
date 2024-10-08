@@ -141,8 +141,7 @@ export default class WaypointPresenter {
     this.#replaceToWaypoint();
   };
 
-  #handleEventTypeChange = (evt) => {
-    const newType = evt.target.innerText;
+  #handleEventTypeChange = (newType) => {
     const newOffers = this.#offersModel.getOffers(newType);
 
     return newOffers; // ❓ Возврат значения у обработчиков событий допустим?

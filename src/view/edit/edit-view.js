@@ -19,6 +19,7 @@ export default class EditView extends AbstractStatefulView {
   #destinations = [];
 
   constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onEventTypeChange, onDestinationChange}) {
+    console.log(waypoint);
     super();
     this._setState(EditView.parseWaypointToState(waypoint, allTypeOffers));
     this.#destinations = destinations;
@@ -67,8 +68,9 @@ export default class EditView extends AbstractStatefulView {
   // Приходится делать это через презентер. Всё правильно?
   #eventTypeClickHandler = (evt) => {
     if (evt.target.closest('.event__type-label')) {
-      const newOffers = this.#handleEventTypeChange(evt);
-      this.updateElement({offers: [], allTypeOffers: newOffers});
+      const type = evt.target.innerText;
+      const newOffers = this.#handleEventTypeChange(type);
+      this.updateElement({type, offers: [], allTypeOffers: newOffers});
     }
   };
 
