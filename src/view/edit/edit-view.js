@@ -59,7 +59,7 @@ export default class EditView extends AbstractStatefulView {
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEditClick(evt);
+    this.#handleEditClick();
   };
 
   // ❓ Функции для поиска нужных offers и destinations принадлежат модели.
@@ -81,10 +81,24 @@ export default class EditView extends AbstractStatefulView {
     }
   };
 
+  // ❓ Сделал не как в демо с вызовом обработчика на ввод каждого символа,
+  // а с изменением обновлённого объекта маршрутной точки только при сохранении формы. Так можно?
+  #updatePriceOf = (waypoint) => {
+    const newPrice = Number(this.element.querySelector('.event__input--price').value);
+    const oldPrice = waypoint['base_price'];
+
+    if (newPrice !== oldPrice) {
+      waypoint['base_price'] = newPrice;
+    }
+  };
+
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
     const waypoint = EditView.parseStateToWaypoint(this._state);
+    this.#updatePriceOf(waypoint);
+
     this.#handleFormSubmit(waypoint);
   };
 
