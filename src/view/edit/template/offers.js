@@ -8,7 +8,7 @@ const isChecked = (id, checkedOffers) =>
 const createOfferTemplate = ({id, title, price}, checkedOffers) =>
   `
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title.split(' ').at(-1)}-${id}" type="checkbox" name="event-offer-${title.split(' ').at(-1)}" ${isChecked(id, checkedOffers)}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title.split(' ').at(-1)}-${id}" data-id="${id}" type="checkbox" name="event-offer-${title.split(' ').at(-1)}" ${isChecked(id, checkedOffers)}>
     <label class="event__offer-label" for="event-offer-${title.split(' ').at(-1)}-${id}">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;

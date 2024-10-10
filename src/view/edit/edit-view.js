@@ -1,6 +1,7 @@
 import createEventHeaderTemplate from './template/event-header';
 import createEventDetailsTemplate from './template/event-details';
 import AbstractStatefulView from '/src/framework/view/abstract-stateful-view';
+import { getObj } from '/src/util/util';
 
 
 const createEditTemplate = (waypoint, allTypeOffers, destinations) =>
@@ -19,7 +20,6 @@ export default class EditView extends AbstractStatefulView {
   #destinations = [];
 
   constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onEventTypeChange, onDestinationChange}) {
-    console.log(waypoint);
     super();
     this._setState(EditView.parseWaypointToState(waypoint, allTypeOffers));
     this.#destinations = destinations;
@@ -83,8 +83,8 @@ export default class EditView extends AbstractStatefulView {
     }
   };
 
-  // ❓ Сделал не как в демо с вызовом обработчика на ввод каждого символа,
-  // а с изменением обновлённого объекта маршрутной точки только при сохранении формы. Так можно?
+  // ❓ Сделал не как в демо с вызовом обработчика на ввод каждого символа и многократным обновлением состояния,
+  // а с изменением обновлённого объекта маршрутной точки только при сохранении формы. Разве так не будет лучше?
   #updatePriceOf = (waypoint) => {
     const newPrice = Number(this.element.querySelector('.event__input--price').value);
     const oldPrice = waypoint['base_price'];
@@ -94,12 +94,26 @@ export default class EditView extends AbstractStatefulView {
     }
   };
 
+  #inputToOffer = (input) => {
+    const id = Number(input.dataset.id);
+    return getObj(this.#allTypeOffers, 'id', id);
+  };
+
+  #updateOffersOf(waypoint) {
+    let checkedOffers = this.element.querySelectorAll('.event__offer-checkbox');
+    checkedOffers = Array.from(checkedOffers);
+    checkedOffers = checkedOffers.filter((input) => input.checked);
+    checkedOffers = checkedOffers.map(this.#inputToOffer);
+
+    waypoint.offers = checkedOffers;
+  }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
     const waypoint = EditView.parseStateToWaypoint(this._state);
     this.#updatePriceOf(waypoint);
+    this.#updateOffersOf(waypoint);
 
     this.#handleFormSubmit(waypoint);
   };
