@@ -42,19 +42,23 @@ export default class EditView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#editClickHandler);
-
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#editClickHandler);
-
     this.element.querySelector('.event__type-group')
       .addEventListener('click', this.#eventTypeClickHandler);
 
+    // ❓ ТЗ 1.4 "Выбирается из списка предложенных значений, полученных с сервера. Пользователь не может ввести свой вариант для пункта назначения."
+    // Есть более нативный способ запретить ввод?
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('keypress', (evt) => evt.preventDefault());
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
     this.element.addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#editClickHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
 
@@ -65,7 +69,7 @@ export default class EditView extends AbstractStatefulView {
 
   // ❓ Функции для поиска нужных offers и destinations принадлежат модели.
   // Из представления нельзя обращаться к модели.
-  // Приходится делать это через презентер. Всё правильно?
+  // Приходится делать это через презентер. Хорошо ли это?
   #eventTypeClickHandler = (evt) => {
     if (evt.target.closest('.event__type-label')) {
       const type = evt.target.innerText;
