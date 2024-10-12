@@ -8,7 +8,7 @@ const getRandomTime = () => {
   const randomTimestamp = getRandomIntInRange(0, 200000000); // 2.31 дня
   const res = dayjs().add(randomTimestamp);
 
-  return res;
+  return res.toDate();
 };
 
 
@@ -20,7 +20,7 @@ const getRandomWaypoint = (getRandomOffers, getRandomDestination) => {
     'type': type,
     'base_price': getRandomIntInRange(20, 2000),
     'is_favorite': getRandomBool(),
-    'date_from': dayjs(),
+    'date_from': new Date(),
     'date_to': getRandomTime(),
     'destination': getRandomDestination(),
     'offers': getRandomOffers(type)

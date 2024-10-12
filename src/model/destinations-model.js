@@ -10,8 +10,12 @@ export default class DestinationsModel {
     return this.#destinations;
   }
 
-  getDestination(id) {
+  getDestinationByID(id) {
     return getObj(this.#destinations, 'id', id);
+  }
+
+  getDestinationByName(name) {
+    return getObj(this.#destinations, 'name', name);
   }
 
   getRandomDestination = () =>

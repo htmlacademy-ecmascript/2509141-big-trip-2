@@ -47,6 +47,7 @@ export default class WaypointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editFormComponent.reset(this.#waypoint);
       this.#replaceToWaypoint();
     }
   }
@@ -59,7 +60,8 @@ export default class WaypointPresenter {
     this.#setWaypointComponent();
     this.#setEditFormComponent();
 
-    if (prevWaypointComponent === null || prevEditFormComponent === null) {
+    const isFirstRender = (prevWaypointComponent === null) || (prevEditFormComponent === null);
+    if (isFirstRender) {
       render(this.#waypointComponent, this.#container);
       return;
     }
@@ -82,7 +84,10 @@ export default class WaypointPresenter {
       waypoint: this.#waypoint,
       allTypeOffers: this.#offersModel.getOffers(this.#waypoint.type),
       destinations: this.#destinationsModel.destinations,
-      onEditClick: () => this.#replaceToWaypoint()
+      onEditClick: this.#handleEditClick,
+      onFormSubmit: this.#handleFormSubmit,
+      onEventTypeChange: this.#handleEventTypeChange,
+      onDestinationChange: this.#handleDestinationChange
     });
   }
 
@@ -106,9 +111,7 @@ export default class WaypointPresenter {
 
   #escKeyDownHandler = (evt) => {
     if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      this.#replaceToWaypoint();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.resetView();
     }
   };
 
@@ -130,13 +133,24 @@ export default class WaypointPresenter {
   };
 
   #handleEditClick = () => {
-    this.#replaceToForm();
+    this.resetView();
   };
 
-  #handleFormSubmit = (evt) => {
-    evt.preventDefault();
-
-    this.#handleDataChange();
+  #handleFormSubmit = (updatedWaypoint) => {
+    this.#handleDataChange(updatedWaypoint);
     this.#replaceToWaypoint();
+  };
+
+  #handleEventTypeChange = (newType) => {
+    const newOffers = this.#offersModel.getOffers(newType);
+
+    return newOffers; // ❓ Возврат значения у обработчиков событий допустим?
+  };
+
+  #handleDestinationChange = (evt) => {
+    const newDestinationName = evt.target.value;
+    const newDestination = this.#destinationsModel.getDestinationByName(newDestinationName);
+
+    return newDestination;
   };
 }
