@@ -9,7 +9,7 @@ export default class WaypointsModel {
   constructor(offersModel, destinationsModel) {
     this.#waypoints = Array.from(
       { length: WAYPOINT_COUNT },
-      () => getRandomWaypoint(offersModel.getRandomOffers, destinationsModel.getRandomDestination)
+      () => getRandomWaypoint(offersModel.getRandomOffersOfType, destinationsModel.getRandomDestination)
     );
   }
 

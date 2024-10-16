@@ -57,7 +57,7 @@ export default class EditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('.event__type-group')
-      .addEventListener('click', this.#eventTypeClickHandler);
+      .addEventListener('change', this.#eventTypeClickHandler);
 
     // ❓ ТЗ 1.4 "Выбирается из списка предложенных значений, полученных с сервера. Пользователь не может ввести свой вариант для пункта назначения."
     // Есть более нативный способ запретить ввод?
@@ -83,16 +83,9 @@ export default class EditView extends AbstractStatefulView {
     this.#handleEditClick();
   };
 
-  // ❓ Функции для поиска нужных offers и destinations принадлежат модели.
-  // Из представления нельзя обращаться к модели.
-  // Приходится делать это через презентер. Хорошо ли это?
-  #eventTypeClickHandler = (evt) => {
-    if (evt.target.closest('.event__type-label')) {
-      const type = evt.target.innerText;
-      const newOffers = this.#handleEventTypeChange(type);
-      this.updateElement({type, offers: [], allTypeOffers: newOffers});
-    }
-  };
+
+  #eventTypeClickHandler = (evt) =>
+    this.#handleEventTypeChange(evt, this, this.updateElement);
 
   #destinationChangeHandler = (evt) => {
     const newDestination = this.#handleDestinationChange(evt);
@@ -137,6 +130,7 @@ export default class EditView extends AbstractStatefulView {
 
     this.#handleFormSubmit(waypoint);
   };
+
 
   #dateFromChangeHandler = ([userDate]) =>
     this.updateElement({'date_from': userDate});

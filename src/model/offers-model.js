@@ -6,13 +6,12 @@ import { getObj } from '../util/util';
 export default class OffersModel {
   #offers = generateMockOffers();
 
-  getOffers(type) {
-    return getObj(this.#offers, 'type', type.toLowerCase()).offers;
-  }
+  getOffersOfType = (type) =>
+    getObj(this.#offers, 'type', type.toLowerCase()).offers;
 
-  getRandomOffers = (type) => {
+  getRandomOffersOfType = (type) => {
     const offers = [];
-    const typeOffers = this.getOffers(type);
+    const typeOffers = this.getOffersOfType(type);
 
     typeOffers.forEach((offer) => {
       if (getRandomBool()) {
@@ -22,11 +21,4 @@ export default class OffersModel {
 
     return offers;
   };
-
-  getOffer(type, id) {
-    const offers = this.getOffers(type);
-    const offer = getObj(offers, 'id', id);
-
-    return offer;
-  }
 }

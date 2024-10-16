@@ -12,8 +12,8 @@ const getRandomTime = () => {
 };
 
 
-const getRandomWaypoint = (getRandomOffers, getRandomDestination) => {
-  const type = getRandomArrayElement(TYPES);
+const getRandomWaypoint = (getRandomOffersOfType, getRandomDestination) => {
+  const type = getRandomArrayElement(TYPES).toLowerCase();
 
   return {
     'id': nanoid(),
@@ -23,7 +23,7 @@ const getRandomWaypoint = (getRandomOffers, getRandomDestination) => {
     'date_from': new Date(),
     'date_to': getRandomTime(),
     'destination': getRandomDestination(),
-    'offers': getRandomOffers(type)
+    'offers': getRandomOffersOfType(type)
   };
 };
 
