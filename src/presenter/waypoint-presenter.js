@@ -154,10 +154,13 @@ export default class WaypointPresenter {
     updateElement.call(scope, newState);
   };
 
-  #handleDestinationChange = (evt) => {
+  #handleDestinationChange = (evt, scope, updateElement) => {
     const newDestinationName = evt.target.value;
     const newDestination = this.#destinationsModel.getDestinationByName(newDestinationName);
+    const isCorrectDestinationName = !!newDestination;
 
-    return newDestination;
+    if (isCorrectDestinationName) {
+      updateElement.call(scope, {destination: newDestination});
+    }
   };
 }

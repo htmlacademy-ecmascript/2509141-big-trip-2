@@ -57,12 +57,8 @@ export default class EditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('.event__type-group')
-      .addEventListener('change', this.#eventTypeClickHandler);
+      .addEventListener('change', this.#eventTypeChangeHandler);
 
-    // ❓ ТЗ 1.4 "Выбирается из списка предложенных значений, полученных с сервера. Пользователь не может ввести свой вариант для пункта назначения."
-    // Есть более нативный способ запретить ввод?
-    this.element.querySelector('.event__input--destination')
-      .addEventListener('keypress', (evt) => evt.preventDefault());
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
@@ -84,20 +80,13 @@ export default class EditView extends AbstractStatefulView {
   };
 
 
-  #eventTypeClickHandler = (evt) =>
+  #eventTypeChangeHandler = (evt) =>
     this.#handleEventTypeChange(evt, this, this.updateElement);
 
-  #destinationChangeHandler = (evt) => {
-    const newDestination = this.#handleDestinationChange(evt);
-    const isCorrectDestinationName = !!newDestination;
+  #destinationChangeHandler = (evt) =>
+    this.#handleDestinationChange(evt, this, this.updateElement);
 
-    if (isCorrectDestinationName) {
-      this.updateElement({destination: newDestination});
-    }
-  };
 
-  // ❓ Сделал не как в демо с вызовом обработчика на ввод каждого символа и многократным обновлением состояния,
-  // а с изменением обновлённого объекта маршрутной точки только при сохранении формы. Разве так не будет лучше?
   #updatePriceOf = (waypoint) => {
     const newPrice = Number(this.element.querySelector('.event__input--price').value);
     const oldPrice = waypoint['base_price'];
