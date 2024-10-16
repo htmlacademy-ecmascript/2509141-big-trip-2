@@ -2,6 +2,8 @@ import createEventHeaderTemplate from './template/event-header';
 import createEventDetailsTemplate from './template/event-details';
 import AbstractStatefulView from '/src/framework/view/abstract-stateful-view';
 import { getObj } from '/src/util/util';
+import flatpickr from 'flatpickr';
+import '/node_modules/flatpickr/dist/flatpickr.min.css';
 
 
 const createEditTemplate = (waypoint, allTypeOffers, destinations) =>
@@ -18,6 +20,9 @@ export default class EditView extends AbstractStatefulView {
   #handleEventTypeChange = null;
   #handleDestinationChange = null;
   #destinations = [];
+
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onEventTypeChange, onDestinationChange}) {
     super();
@@ -41,14 +46,19 @@ export default class EditView extends AbstractStatefulView {
     this.updateElement(initialState);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    this.#datepickerFrom.destroy();
+    this.#datepickerTo.destroy();
+    this.#datepickerFrom = null;
+    this.#datepickerTo = null;
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.event__type-group')
-      .addEventListener('click', this.#eventTypeClickHandler);
+      .addEventListener('change', this.#eventTypeChangeHandler);
 
-    // ❓ ТЗ 1.4 "Выбирается из списка предложенных значений, полученных с сервера. Пользователь не может ввести свой вариант для пункта назначения."
-    // Есть более нативный способ запретить ввод?
-    this.element.querySelector('.event__input--destination')
-      .addEventListener('keypress', (evt) => evt.preventDefault());
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
 
@@ -59,6 +69,8 @@ export default class EditView extends AbstractStatefulView {
 
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
+
+    this.#setDatepicker();
   }
 
 
@@ -67,28 +79,14 @@ export default class EditView extends AbstractStatefulView {
     this.#handleEditClick();
   };
 
-  // ❓ Функции для поиска нужных offers и destinations принадлежат модели.
-  // Из представления нельзя обращаться к модели.
-  // Приходится делать это через презентер. Хорошо ли это?
-  #eventTypeClickHandler = (evt) => {
-    if (evt.target.closest('.event__type-label')) {
-      const type = evt.target.innerText;
-      const newOffers = this.#handleEventTypeChange(type);
-      this.updateElement({type, offers: [], allTypeOffers: newOffers});
-    }
-  };
 
-  #destinationChangeHandler = (evt) => {
-    const newDestination = this.#handleDestinationChange(evt);
-    const isCorrectDestinationName = !!newDestination;
+  #eventTypeChangeHandler = (evt) =>
+    this.#handleEventTypeChange(evt, this, this.updateElement);
 
-    if (isCorrectDestinationName) {
-      this.updateElement({destination: newDestination});
-    }
-  };
+  #destinationChangeHandler = (evt) =>
+    this.#handleDestinationChange(evt, this, this.updateElement);
 
-  // ❓ Сделал не как в демо с вызовом обработчика на ввод каждого символа и многократным обновлением состояния,
-  // а с изменением обновлённого объекта маршрутной точки только при сохранении формы. Разве так не будет лучше?
+
   #updatePriceOf = (waypoint) => {
     const newPrice = Number(this.element.querySelector('.event__input--price').value);
     const oldPrice = waypoint['base_price'];
@@ -121,6 +119,30 @@ export default class EditView extends AbstractStatefulView {
 
     this.#handleFormSubmit(waypoint);
   };
+
+
+  #dateFromChangeHandler = ([userDate]) =>
+    this.updateElement({'date_from': userDate});
+
+  #dateToChangeHandler = ([userDate]) =>
+    this.updateElement({'date_to': userDate});
+
+  #makeFlatpickr(selector, dateKey, cb) {
+    return flatpickr(
+      this.element.querySelector(`[name="event-${selector}-time"]`),
+      {
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state[`${dateKey}`],
+        enableTime: true,
+        onChange: cb
+      }
+    );
+  }
+
+  #setDatepicker() {
+    this.#datepickerFrom = this.#makeFlatpickr('start', 'date_from', this.#dateFromChangeHandler);
+    this.#datepickerTo = this.#makeFlatpickr('end', 'date_to', this.#dateToChangeHandler);
+  }
 
 
   static parseWaypointToState(waypoint, allTypeOffers) {

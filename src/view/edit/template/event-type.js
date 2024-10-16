@@ -1,11 +1,12 @@
 import { TYPES } from '/src/const';
 
 
-const createTypeItemTemplate = (id, type) => {
+const createTypeItemTemplate = (id, type, checkedType) => {
   const lowType = type.toLowerCase();
+  const checked = (lowType === checkedType) ? 'checked' : ''; // ❓ Пришлось вручную вычислять checked. Это не лишняя операция?
 
   return (`<div class="event__type-item">
-    <input id="event-type-${lowType}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowType}">
+    <input id="event-type-${lowType}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowType}" ${checked}>
     <label class="event__type-label  event__type-label--${lowType}" for="event-type-${lowType}-${id}">${type}</label>
   </div>`);
 };
@@ -22,7 +23,7 @@ const createEventTypeTemplate = ({id, type}) =>
     <div class="event__type-list">
       <fieldset class="event__type-group">
         <legend class="visually-hidden">Event type</legend>
-        ${TYPES.map((typeName) => createTypeItemTemplate(id, typeName)).join('')}
+        ${TYPES.map((typeName) => createTypeItemTemplate(id, typeName, type)).join('')}
       </fieldset>
     </div>
   </div>`;

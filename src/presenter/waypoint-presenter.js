@@ -82,7 +82,7 @@ export default class WaypointPresenter {
   #setEditFormComponent() {
     this.#editFormComponent = new EditView({
       waypoint: this.#waypoint,
-      allTypeOffers: this.#offersModel.getOffers(this.#waypoint.type),
+      allTypeOffers: this.#offersModel.getOffersOfType(this.#waypoint.type),
       destinations: this.#destinationsModel.destinations,
       onEditClick: this.#handleEditClick,
       onFormSubmit: this.#handleFormSubmit,
@@ -141,16 +141,26 @@ export default class WaypointPresenter {
     this.#replaceToWaypoint();
   };
 
-  #handleEventTypeChange = (newType) => {
-    const newOffers = this.#offersModel.getOffers(newType);
+  #handleEventTypeChange = (evt, scope, updateElement) => {
+    const newType = evt.target.value;
+    const newOffers = this.#offersModel.getOffersOfType(newType);
 
-    return newOffers; // ❓ Возврат значения у обработчиков событий допустим?
+    const newState = {
+      type: newType,
+      offers: [],
+      allTypeOffers: newOffers
+    };
+
+    updateElement.call(scope, newState);
   };
 
-  #handleDestinationChange = (evt) => {
+  #handleDestinationChange = (evt, scope, updateElement) => {
     const newDestinationName = evt.target.value;
     const newDestination = this.#destinationsModel.getDestinationByName(newDestinationName);
+    const isCorrectDestinationName = !!newDestination;
 
-    return newDestination;
+    if (isCorrectDestinationName) {
+      updateElement.call(scope, {destination: newDestination});
+    }
   };
 }
