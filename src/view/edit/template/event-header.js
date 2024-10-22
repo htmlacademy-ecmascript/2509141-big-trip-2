@@ -1,6 +1,6 @@
 import { humanizeDate } from '/src/util/util';
 import { DateTimeFormat } from '/src/const';
-import { createCancelButtonTemplate, createRollupButtonTemplate } from './buttons';
+import { createCancelButtonTemplate, createDeleteButtonTemplate, createRollupButtonTemplate } from './buttons';
 import createEventTypeTemplate from './event-type';
 
 
@@ -48,7 +48,7 @@ const createEventHeaderTemplate = (waypoint, destinations) => {
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    ${createCancelButtonTemplate()}
+    ${createDeleteButtonTemplate()}
     ${createRollupButtonTemplate()}
   </header>`);
 };

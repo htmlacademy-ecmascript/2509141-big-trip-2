@@ -25,11 +25,25 @@ const DateTimeFormat = {
 
 const WAYPOINT_COUNT = 4;
 
+const UserAction = {
+  UPDATE: 'UPDATE',
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 
 export {
   TYPES,
   Filter, DEFAULT_FILTER,
   SortType, DEFAULT_SORT_TYPE,
   DateTimeFormat,
-  WAYPOINT_COUNT
+  WAYPOINT_COUNT,
+  UserAction,
+  UpdateType
 };

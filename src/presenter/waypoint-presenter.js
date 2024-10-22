@@ -2,6 +2,7 @@ import { render, replace, remove } from '/src/framework/render.js';
 import { isEscapeKey } from '../util/util.js';
 import EditView from '../view/edit/edit-view.js';
 import WaypointView from '../view/list/waypoint-view';
+import { UpdateType, UserAction } from '../const.js';
 
 
 const Mode = {
@@ -86,6 +87,7 @@ export default class WaypointPresenter {
       destinations: this.#destinationsModel.destinations,
       onEditClick: this.#handleEditClick,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
       onEventTypeChange: this.#handleEventTypeChange,
       onDestinationChange: this.#handleDestinationChange
     });
@@ -129,7 +131,16 @@ export default class WaypointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#waypoint, 'is_favorite': !this.#waypoint['is_favorite']});
+    const updatedWaypoint = {
+      ...this.#waypoint,
+      'is_favorite': !this.#waypoint['is_favorite']
+    };
+
+    this.#handleDataChange(
+      UserAction.UPDATE,
+      UpdateType.MINOR,
+      updatedWaypoint
+    );
   };
 
   #handleEditClick = () => {
@@ -137,8 +148,21 @@ export default class WaypointPresenter {
   };
 
   #handleFormSubmit = (updatedWaypoint) => {
-    this.#handleDataChange(updatedWaypoint);
+    this.#handleDataChange(
+      UserAction.UPDATE,
+      UpdateType.MINOR,
+      updatedWaypoint
+    );
+
     this.#replaceToWaypoint();
+  };
+
+  #handleDeleteClick = (waypoint) => {
+    this.#handleDataChange(
+      UserAction.DELETE,
+      UpdateType.MINOR,
+      waypoint
+    );
   };
 
   #handleEventTypeChange = (evt, scope, updateElement) => {
