@@ -1,12 +1,12 @@
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
-const Filter = {
+const FilterType = {
   EVERYTHING: 'everything',
   PAST: 'past',
   PRESENT: 'present',
   FUTURE: 'future'
 };
-const DEFAULT_FILTER = Filter.EVERYTHING;
+const DEFAULT_FILTER = FilterType.EVERYTHING;
 
 const SortType = {
   PRICE: 'price',
@@ -40,7 +40,7 @@ const UpdateType = {
 
 export {
   TYPES,
-  Filter, DEFAULT_FILTER,
+  FilterType, DEFAULT_FILTER,
   SortType, DEFAULT_SORT_TYPE,
   DateTimeFormat,
   WAYPOINT_COUNT,

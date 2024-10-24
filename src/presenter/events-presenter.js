@@ -5,6 +5,7 @@ import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
 import WaypointPresenter from './waypoint-presenter.js';
+import filter from '../util/filter.js';
 
 
 export default class Presenter {
@@ -13,8 +14,9 @@ export default class Presenter {
   #emptyView = null;
   #listView = new ListView();
 
-  #waypointsModel = null;
+  #filterModel = null;
   #offersModel = null;
+  #waypointsModel = null;
   #destinationsModel = null;
 
   #currentFilter = DEFAULT_FILTER;
@@ -23,18 +25,22 @@ export default class Presenter {
   #waypointPresenters = new Map();
 
 
-  constructor({container, waypointsModel, offersModel, destinationsModel}) {
+  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel}) {
     this.#container = container;
+    this.#filterModel = filterModel;
     this.#offersModel = offersModel;
     this.#waypointsModel = waypointsModel;
     this.#destinationsModel = destinationsModel;
 
     this.#waypointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
 
   get waypoints() {
+    this.#currentFilter = this.#filterModel.currentFilter;
     let waypoints = this.#waypointsModel.waypoints;
+    waypoints = filter[this.#currentFilter](waypoints);
     // ❓ Теперь при каждом запросе waypoints (например для проверки количества)
     // происходит копированние массива, сортировка и прочие тяжёлые операции.
     // Хорошо ли это?
@@ -46,21 +52,6 @@ export default class Presenter {
 
 
   init() {
-    // TEMP: для тестирования сортировки по дате
-    let od = this.waypoints[1]['date_from'].getDate();
-    this.waypoints[1]['date_from'].setDate(od - 1);
-    od = this.waypoints[2]['date_from'].getDate();
-    this.waypoints[2]['date_from'].setDate(od - 2);
-
-
-    this.#renderAll();
-  }
-
-
-  updateFilter(filter = DEFAULT_FILTER) {
-    this.#currentFilter = filter;
-
-    this.#removeAll();
     this.#renderAll();
   }
 

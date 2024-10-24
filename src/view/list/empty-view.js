@@ -1,16 +1,16 @@
 import AbstractView from '/src/framework/view/abstract-view';
-import { Filter, DEFAULT_FILTER } from '/src/const';
+import { FilterType, DEFAULT_FILTER } from '/src/const';
 
 
 const getMessage = (filter) => {
   const messages = {
-    [Filter.PAST]: 'There are no past events now',
-    [Filter.PRESENT]: 'There are no present events now',
-    [Filter.FUTURE]: 'There are no future events now',
-    [Filter.EVERYTHING]: 'Click New Event to create your first point'
+    [FilterType.PAST]: 'There are no past events now',
+    [FilterType.PRESENT]: 'There are no present events now',
+    [FilterType.FUTURE]: 'There are no future events now',
+    [FilterType.EVERYTHING]: 'Click New Event to create your first point'
   };
 
-  return messages[filter] || messages[Filter.EVERYTHING];
+  return messages[filter] || messages[DEFAULT_FILTER];
 };
 
 const createEmptyTemplate = (filter) =>
