@@ -1,14 +1,15 @@
 import { render, remove } from '/src/framework/render.js';
-import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, SortType, UpdateType, UserAction } from '../const.js';
+import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction } from '../const.js';
 import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
 import WaypointPresenter from './waypoint-presenter.js';
 import filter from '../util/filter.js';
+import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 
-export default class Presenter {
+export default class EventsPresenter {
   #container = null;
   #sortView = null;
   #emptyView = null;
@@ -23,14 +24,25 @@ export default class Presenter {
   #currentSortType = DEFAULT_SORT_TYPE;
 
   #waypointPresenters = new Map();
+  #newWaypointPresenter = null;
 
 
-  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel}) {
+  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
     this.#container = container;
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
     this.#waypointsModel = waypointsModel;
     this.#destinationsModel = destinationsModel;
+
+    this.#newWaypointPresenter = new NewWaypointPresenter({
+      container: this.#listView.element,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel,
+      onDestroy: onNewWaypointDestroy,
+      onDataChange: this.#handleViewAction,
+      onEventTypeChange: this.#handleEventTypeChange,
+      onDestinationChange: this.#handleDestinationChange
+    });
 
     this.#waypointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -55,6 +67,11 @@ export default class Presenter {
     this.#renderAll();
   }
 
+  createWaypoint() {
+    this.#currentSortType = DEFAULT_SORT_TYPE;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newWaypointPresenter.init();
+  }
 
   #renderAll() {
     if (this.waypoints.length > 0) {
@@ -89,7 +106,9 @@ export default class Presenter {
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
       onDataChange: this.#handleViewAction,
-      onModeChange: this.#handleModeChange
+      onModeChange: this.#handleModeChange,
+      onEventTypeChange: this.#handleEventTypeChange,
+      onDestinationChange: this.#handleDestinationChange
     });
 
     waypointPresenter.init(waypoint);
@@ -102,7 +121,6 @@ export default class Presenter {
     this.#clearWaypointList();
 
     remove(this.#sortView);
-    remove(this.#listView);
     remove(this.#emptyView);
 
     if (resetSortType) {
@@ -111,6 +129,7 @@ export default class Presenter {
   }
 
   #clearWaypointList() {
+    this.#newWaypointPresenter.destroy();
     this.#waypointPresenters.forEach((presenter) => presenter.destroy());
     this.#waypointPresenters.clear();
   }
@@ -148,6 +167,7 @@ export default class Presenter {
 
 
   #handleModeChange = () => {
+    this.#newWaypointPresenter.destroy();
     this.#waypointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -172,4 +192,29 @@ export default class Presenter {
         return waypoints;
     }
   }
+
+  // ❓ Перенёс эти методы из WaypointPresenter сюда, так как они используются также и в NewWaypointPresenter
+  // Хорошо ли это?
+  #handleEventTypeChange = (evt, scope, updateElement) => {
+    const newType = evt.target.value;
+    const newOffers = this.#offersModel.getOffersOfType(newType);
+
+    const newState = {
+      type: newType,
+      offers: [],
+      allTypeOffers: newOffers
+    };
+
+    updateElement.call(scope, newState);
+  };
+
+  #handleDestinationChange = (evt, scope, updateElement) => {
+    const newDestinationName = evt.target.value;
+    const newDestination = this.#destinationsModel.getDestinationByName(newDestinationName);
+    const isCorrectDestinationName = !!newDestination;
+
+    if (isCorrectDestinationName) {
+      updateElement.call(scope, {destination: newDestination});
+    }
+  };
 }

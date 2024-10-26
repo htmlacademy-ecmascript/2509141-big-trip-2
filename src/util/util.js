@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 
 const isEscapeKey = (evt) =>
-  evt.key === 'Escape';
+  evt.key === 'Escape' || evt.key === 'Esc';
 
 
 const createIdGeneratorInRange = (min, max) =>

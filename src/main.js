@@ -4,6 +4,8 @@ import DestinationsModel from './model/destinations-model.js';
 import WaypointsModel from './model/waypoints-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filter-model.js';
+import NewWaypointButtonView from './view/header/new-waypoint-button-view.js';
+import { render } from './framework/render.js';
 
 
 const filterModel = new FilterModel();
@@ -18,7 +20,8 @@ const eventsPresenter = new EventsPresenter({
   destinationsModel,
   waypointsModel,
   filterModel,
-  offersModel
+  offersModel,
+  onNewWaypointDestroy: handleNewWaypointFormClose
 });
 eventsPresenter.init();
 
@@ -30,3 +33,18 @@ const filterPresenter = new FilterPresenter({
   filterModel
 });
 filterPresenter.init();
+
+
+const newWaypointComponent = new NewWaypointButtonView({onClick: handleNewWaypointButtonClick});
+
+function handleNewWaypointFormClose() {
+  newWaypointComponent.element.disabled = false;
+}
+
+function handleNewWaypointButtonClick() {
+  eventsPresenter.createWaypoint();
+  newWaypointComponent.element.disabled = true;
+}
+
+const siteHeaderElement = document.querySelector('.trip-main');
+render(newWaypointComponent, siteHeaderElement);

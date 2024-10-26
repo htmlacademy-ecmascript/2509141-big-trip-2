@@ -6,6 +6,7 @@ import { WAYPOINT_COUNT } from '/src/const';
 export default class WaypointsModel extends Observable {
   #waypoints = []; // TODO: преобразовать в Set?
 
+
   constructor(offersModel, destinationsModel) {
     super();
 
@@ -15,16 +16,7 @@ export default class WaypointsModel extends Observable {
     );
 
     // TEMP: для тестирования сортировки по дате и фильтров
-    // FUTURE filter
-    let od = this.waypoints[1]['date_from'].getDate();
-    this.waypoints[1]['date_from'].setDate(od + 1);
-    od = this.waypoints[1]['date_to'].getDate();
-    this.waypoints[1]['date_to'].setDate(od + 1);
-    // PAST filter
-    od = this.waypoints[2]['date_from'].getDate();
-    this.waypoints[2]['date_from'].setDate(od - 3);
-    od = this.waypoints[2]['date_to'].getDate();
-    this.waypoints[2]['date_to'].setDate(od - 3);
+    this.#enableSortFilterTestMode();
   }
 
   get waypoints() {
@@ -69,5 +61,18 @@ export default class WaypointsModel extends Observable {
     ];
 
     this._notify(updateType);
+  }
+
+  #enableSortFilterTestMode() {
+    // FUTURE filter
+    let od = this.waypoints[1]['date_from'].getDate();
+    this.waypoints[1]['date_from'].setDate(od + 1);
+    od = this.waypoints[1]['date_to'].getDate();
+    this.waypoints[1]['date_to'].setDate(od + 1);
+    // PAST filter
+    od = this.waypoints[2]['date_from'].getDate();
+    this.waypoints[2]['date_from'].setDate(od - 3);
+    od = this.waypoints[2]['date_to'].getDate();
+    this.waypoints[2]['date_to'].setDate(od - 3);
   }
 }

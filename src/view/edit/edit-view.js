@@ -6,16 +6,16 @@ import flatpickr from 'flatpickr';
 import '/node_modules/flatpickr/dist/flatpickr.min.css';
 
 
-const createEditTemplate = (waypoint, allTypeOffers, destinations) =>
+const createEditTemplate = (waypoint, allTypeOffers, destinations, isNew) =>
   `<form class="event event--edit" action="#" method="post">
-    ${createEventHeaderTemplate(waypoint, destinations)}
+    ${createEventHeaderTemplate(waypoint, destinations, isNew)}
     ${createEventDetailsTemplate(waypoint, allTypeOffers)}
   </form>`;
 
 
 export default class EditView extends AbstractStatefulView {
   #allTypeOffers = null;
-  #handleEditClick = null;
+  #handleCloseClick = null;
   #handleFormSubmit = null;
   #handleDeleteClick = null;
   #handleEventTypeChange = null;
@@ -25,22 +25,26 @@ export default class EditView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({waypoint, allTypeOffers, destinations, onEditClick, onFormSubmit, onDeleteClick, onEventTypeChange, onDestinationChange}) {
+  #isNew = false;
+
+  constructor({waypoint, allTypeOffers, destinations, onCloseClick, onFormSubmit, onDeleteClick, onEventTypeChange, onDestinationChange, isNew = false}) {
     super();
     this._setState(EditView.parseWaypointToState(waypoint, allTypeOffers));
     this.#destinations = destinations;
     this.#allTypeOffers = allTypeOffers;
-    this.#handleEditClick = onEditClick;
+    this.#handleCloseClick = onCloseClick;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
     this.#handleEventTypeChange = onEventTypeChange;
     this.#handleDestinationChange = onDestinationChange;
 
+    this.#isNew = isNew;
+
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations);
+    return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations, this.#isNew);
   }
 
   reset(waypoint) {
@@ -50,7 +54,6 @@ export default class EditView extends AbstractStatefulView {
 
   removeElement() {
     super.removeElement();
-
     this.#datepickerFrom.destroy();
     this.#datepickerTo.destroy();
     this.#datepickerFrom = null;
@@ -66,22 +69,34 @@ export default class EditView extends AbstractStatefulView {
 
     this.element.addEventListener('submit', this.#formSubmitHandler);
 
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#editClickHandler);
-
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#editClickHandler);
-
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#formDeleteClickHandler);
-
+    this.#setCloseHandlers();
     this.#setDatepicker();
   }
 
 
-  #editClickHandler = (evt) => {
+  #setCloseHandlers = () => {
+    if (this.#isNew) {
+      this.element.querySelector('.event__reset-btn')
+        .addEventListener('click', this.#closeClickHandler);
+      return;
+    }
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeClickHandler);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
+  };
+
+
+  #closeClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEditClick();
+    this.#handleCloseClick();
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditView.parseStateToWaypoint(this._state));
   };
 
 
@@ -123,11 +138,6 @@ export default class EditView extends AbstractStatefulView {
     this.#updateOffersOf(waypoint);
 
     this.#handleFormSubmit(waypoint);
-  };
-
-  #formDeleteClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleDeleteClick(EditView.parseStateToWaypoint(this._state));
   };
 
 

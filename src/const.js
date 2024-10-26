@@ -1,4 +1,5 @@
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const DEFAULT_TYPE = 'Flight';
 
 const FilterType = {
   EVERYTHING: 'everything',
@@ -39,7 +40,7 @@ const UpdateType = {
 
 
 export {
-  TYPES,
+  TYPES, DEFAULT_TYPE,
   FilterType, DEFAULT_FILTER,
   SortType, DEFAULT_SORT_TYPE,
   DateTimeFormat,

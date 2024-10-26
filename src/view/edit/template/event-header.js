@@ -8,7 +8,7 @@ const createOptionTemplate = ({name}) =>
   `<option value="${name}"></option>`;
 
 
-const createEventHeaderTemplate = (waypoint, destinations) => {
+const createEventHeaderTemplate = (waypoint, destinations, isNew) => {
   const { id, type, destination, 'base_price': price } = waypoint;
 
   const start = humanizeDate(waypoint['date_from'], DateTimeFormat.EDIT);
@@ -48,8 +48,8 @@ const createEventHeaderTemplate = (waypoint, destinations) => {
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    ${createDeleteButtonTemplate()}
-    ${createRollupButtonTemplate()}
+    ${isNew ? createCancelButtonTemplate() : createDeleteButtonTemplate()}
+    ${isNew ? '' : createRollupButtonTemplate()}
   </header>`);
 };
 
