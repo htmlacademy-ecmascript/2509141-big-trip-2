@@ -1,14 +1,16 @@
+import he from 'he';
 import { humanizeDate } from '/src/util/util';
 import { DateTimeFormat } from '/src/const';
-import { createCancelButtonTemplate, createRollupButtonTemplate } from './buttons';
+import { createCancelButtonTemplate, createDeleteButtonTemplate, createRollupButtonTemplate } from './buttons';
 import createEventTypeTemplate from './event-type';
+import { Mode } from '/src/const';
 
 
 const createOptionTemplate = ({name}) =>
   `<option value="${name}"></option>`;
 
 
-const createEventHeaderTemplate = (waypoint, destinations) => {
+const createEventHeaderTemplate = (waypoint, destinations, mode) => {
   const { id, type, destination, 'base_price': price } = waypoint;
 
   const start = humanizeDate(waypoint['date_from'], DateTimeFormat.EDIT);
@@ -25,7 +27,7 @@ const createEventHeaderTemplate = (waypoint, destinations) => {
       <label class="event__label  event__type-output" for="event-destination-${id}">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${name}" list="destination-list-${id}">
+      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${he.encode(name)}" list="destination-list-${id}" required>
       <datalist id="destination-list-${id}">
         ${options}
       </datalist>
@@ -44,12 +46,12 @@ const createEventHeaderTemplate = (waypoint, destinations) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
+      <input class="event__input  event__input--price" id="event-price-${id}" type="number" min="1" name="event-price" value="${price}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    ${createCancelButtonTemplate()}
-    ${createRollupButtonTemplate()}
+    ${mode === Mode.NEW ? createCancelButtonTemplate() : createDeleteButtonTemplate()}
+    ${mode === Mode.NEW ? '' : createRollupButtonTemplate()}
   </header>`);
 };
 

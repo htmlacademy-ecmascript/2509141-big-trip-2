@@ -1,13 +1,9 @@
 import { render, replace, remove } from '/src/framework/render.js';
-import { isEscapeKey } from '../util/util.js';
+import { isEscapeKey, isMinor } from '../util/util.js';
 import EditView from '../view/edit/edit-view.js';
 import WaypointView from '../view/list/waypoint-view';
+import { UpdateType, UserAction, Mode } from '../const.js';
 
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class WaypointPresenter {
   #waypoint = null;
@@ -21,14 +17,20 @@ export default class WaypointPresenter {
 
   #handleDataChange = null;
   #handleModeChange = null;
+  #handleEventTypeChange = null;
+  #handleDestinationChange = null;
 
   #mode = Mode.DEFAULT;
 
 
-  constructor({container, offersModel, destinationsModel, onDataChange, onModeChange}) {
+  constructor({container, offersModel, destinationsModel, onEventTypeChange, onDestinationChange, onDataChange, onModeChange}) {
     this.#container = container;
+
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+
+    this.#handleEventTypeChange = onEventTypeChange;
+    this.#handleDestinationChange = onDestinationChange;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
@@ -43,6 +45,8 @@ export default class WaypointPresenter {
   destroy() {
     remove(this.#waypointComponent);
     remove(this.#editFormComponent);
+
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   resetView() {
@@ -84,8 +88,9 @@ export default class WaypointPresenter {
       waypoint: this.#waypoint,
       allTypeOffers: this.#offersModel.getOffersOfType(this.#waypoint.type),
       destinations: this.#destinationsModel.destinations,
-      onEditClick: this.#handleEditClick,
+      onCloseClick: this.#handleCloseClick,
       onFormSubmit: this.#handleFormSubmit,
+      onDeleteClick: this.#handleDeleteClick,
       onEventTypeChange: this.#handleEventTypeChange,
       onDestinationChange: this.#handleDestinationChange
     });
@@ -129,38 +134,40 @@ export default class WaypointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#waypoint, 'is_favorite': !this.#waypoint['is_favorite']});
+    const updatedWaypoint = {
+      ...this.#waypoint,
+      'is_favorite': !this.#waypoint['is_favorite']
+    };
+
+    this.#handleDataChange(
+      UserAction.UPDATE,
+      UpdateType.PATCH,
+      updatedWaypoint
+    );
   };
 
-  #handleEditClick = () => {
+  #handleCloseClick = () => {
     this.resetView();
   };
 
+  #handleDeleteClick = (waypoint) =>
+    this.#handleDataChange(
+      UserAction.DELETE,
+      UpdateType.MINOR,
+      waypoint
+    );
+
   #handleFormSubmit = (updatedWaypoint) => {
-    this.#handleDataChange(updatedWaypoint);
+    const updateType = isMinor(this.#waypoint, updatedWaypoint)
+      ? UpdateType.MINOR
+      : UpdateType.PATCH;
+
+    this.#handleDataChange(
+      UserAction.UPDATE,
+      updateType,
+      updatedWaypoint
+    );
+
     this.#replaceToWaypoint();
-  };
-
-  #handleEventTypeChange = (evt, scope, updateElement) => {
-    const newType = evt.target.value;
-    const newOffers = this.#offersModel.getOffersOfType(newType);
-
-    const newState = {
-      type: newType,
-      offers: [],
-      allTypeOffers: newOffers
-    };
-
-    updateElement.call(scope, newState);
-  };
-
-  #handleDestinationChange = (evt, scope, updateElement) => {
-    const newDestinationName = evt.target.value;
-    const newDestination = this.#destinationsModel.getDestinationByName(newDestinationName);
-    const isCorrectDestinationName = !!newDestination;
-
-    if (isCorrectDestinationName) {
-      updateElement.call(scope, {destination: newDestination});
-    }
   };
 }

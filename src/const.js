@@ -1,12 +1,13 @@
 const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const DEFAULT_TYPE = 'Flight';
 
-const Filter = {
+const FilterType = {
   EVERYTHING: 'everything',
   PAST: 'past',
   PRESENT: 'present',
   FUTURE: 'future'
 };
-const DEFAULT_FILTER = Filter.EVERYTHING;
+const DEFAULT_FILTER = FilterType.EVERYTHING;
 
 const SortType = {
   PRICE: 'price',
@@ -25,11 +26,30 @@ const DateTimeFormat = {
 
 const WAYPOINT_COUNT = 4;
 
+const UserAction = {
+  UPDATE: 'UPDATE',
+  ADD: 'ADD',
+  DELETE: 'DELETE',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  NEW: 'NEW'
+};
 
 export {
-  TYPES,
-  Filter, DEFAULT_FILTER,
+  TYPES, DEFAULT_TYPE,
+  FilterType, DEFAULT_FILTER,
   SortType, DEFAULT_SORT_TYPE,
   DateTimeFormat,
-  WAYPOINT_COUNT
+  WAYPOINT_COUNT,
+  UserAction, UpdateType,
+  Mode
 };

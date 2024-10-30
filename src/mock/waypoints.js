@@ -13,7 +13,7 @@ const getRandomTime = () => {
 
 
 const getRandomWaypoint = (getRandomOffersOfType, getRandomDestination) => {
-  const type = getRandomArrayElement(TYPES).toLowerCase();
+  const type = getRandomArrayElement(TYPES);
 
   return {
     'id': nanoid(),
