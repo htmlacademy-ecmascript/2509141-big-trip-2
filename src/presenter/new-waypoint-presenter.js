@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { isEscapeKey } from '../util/util';
-import { DEFAULT_TYPE, UpdateType, UserAction } from '../const';
+import { DEFAULT_TYPE, Mode, UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition } from '../framework/render';
 import EditView from '../view/edit/edit-view';
 
@@ -41,12 +41,12 @@ export default class NewWaypointPresenter {
       onCloseClick: this.#handleCloseClick,
       onFormSubmit: this.#handleFormSubmit,
       // ❓ Так как EditView используется и для создания новой точки и для редактирования старой,
-      // пришлось передать пустую функцию.
+      // пришлось передать пустую функцию для ненужного обработчика.
       // Хорошо ли это?
       onDeleteClick: () => {},
       onEventTypeChange: this.#handleEventTypeChange,
       onDestinationChange: this.#handleDestinationChange,
-      isNew: true
+      mode: Mode.NEW
     });
 
     render(this.#editFormComponent, this.#container, RenderPosition.AFTERBEGIN);
@@ -74,7 +74,7 @@ export default class NewWaypointPresenter {
     'base_price': 0,
     'is_favorite': false,
     'date_from': new Date(),
-    'date_to': new Date(),
+    'date_to': new Date(Date.now() + 60000),
     'destination': null,
     'offers': []
   });

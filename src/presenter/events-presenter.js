@@ -57,7 +57,7 @@ export default class EventsPresenter {
     // происходит копированние массива, сортировка и прочие тяжёлые операции.
     // Хорошо ли это?
     // Может хотя бы выделить отдельную переменную waypointsCount в модели?
-    waypoints = this.#getSortedWaypoints([...waypoints]); // Проверить проблемы из-за обязательного копирования
+    waypoints = this.#getSortedWaypoints([...waypoints]);
 
     return waypoints;
   }
@@ -116,7 +116,7 @@ export default class EventsPresenter {
   };
 
   // ❓ {resetSortType = false} = {}
-  // Это ещё что?
+  // Как это работает?
   #removeAll({resetSortType = false} = {}) {
     this.#clearWaypointList();
 
@@ -194,6 +194,8 @@ export default class EventsPresenter {
   }
 
   // ❓ Перенёс эти методы из WaypointPresenter сюда, так как они используются также и в NewWaypointPresenter
+  // Теперь EditView перенаправляет обработчик в WaypointPresenter/NewWaypointPresenter,
+  // а эти презентеры в свою очередь ничего с ними не делают, только ещё раз перенаправляют сюда, в EventsPresenter.
   // Хорошо ли это?
   #handleEventTypeChange = (evt, scope, updateElement) => {
     const newType = evt.target.value;

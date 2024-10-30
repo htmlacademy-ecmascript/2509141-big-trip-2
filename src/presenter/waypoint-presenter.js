@@ -1,14 +1,9 @@
 import { render, replace, remove } from '/src/framework/render.js';
-import { isEscapeKey } from '../util/util.js';
+import { isEscapeKey, isMinor } from '../util/util.js';
 import EditView from '../view/edit/edit-view.js';
 import WaypointView from '../view/list/waypoint-view';
-import { UpdateType, UserAction } from '../const.js';
+import { UpdateType, UserAction, Mode } from '../const.js';
 
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 
 export default class WaypointPresenter {
   #waypoint = null;
@@ -146,7 +141,7 @@ export default class WaypointPresenter {
 
     this.#handleDataChange(
       UserAction.UPDATE,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       updatedWaypoint
     );
   };
@@ -163,9 +158,13 @@ export default class WaypointPresenter {
     );
 
   #handleFormSubmit = (updatedWaypoint) => {
+    const updateType = isMinor(this.#waypoint, updatedWaypoint)
+      ? UpdateType.MINOR
+      : UpdateType.PATCH;
+
     this.#handleDataChange(
       UserAction.UPDATE,
-      UpdateType.MINOR,
+      updateType,
       updatedWaypoint
     );
 

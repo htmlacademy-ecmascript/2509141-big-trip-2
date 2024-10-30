@@ -38,6 +38,11 @@ const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+  NEW: 'NEW'
+};
 
 export {
   TYPES, DEFAULT_TYPE,
@@ -45,6 +50,6 @@ export {
   SortType, DEFAULT_SORT_TYPE,
   DateTimeFormat,
   WAYPOINT_COUNT,
-  UserAction,
-  UpdateType
+  UserAction, UpdateType,
+  Mode
 };

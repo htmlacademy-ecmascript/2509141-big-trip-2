@@ -1,14 +1,15 @@
-import createEventHeaderTemplate from './template/event-header';
-import createEventDetailsTemplate from './template/event-details';
 import AbstractStatefulView from '/src/framework/view/abstract-stateful-view';
-import { getObj } from '/src/util/util';
+import createEventDetailsTemplate from './template/event-details';
+import createEventHeaderTemplate from './template/event-header';
+import { getObj, isValidDateInterval } from '/src/util/util';
+import { Mode } from '/src/const';
 import flatpickr from 'flatpickr';
 import '/node_modules/flatpickr/dist/flatpickr.min.css';
 
 
-const createEditTemplate = (waypoint, allTypeOffers, destinations, isNew) =>
+const createEditTemplate = (waypoint, allTypeOffers, destinations, mode) =>
   `<form class="event event--edit" action="#" method="post">
-    ${createEventHeaderTemplate(waypoint, destinations, isNew)}
+    ${createEventHeaderTemplate(waypoint, destinations, mode)}
     ${createEventDetailsTemplate(waypoint, allTypeOffers)}
   </form>`;
 
@@ -25,9 +26,9 @@ export default class EditView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  #isNew = false;
+  #mode = Mode.EDITING;
 
-  constructor({waypoint, allTypeOffers, destinations, onCloseClick, onFormSubmit, onDeleteClick, onEventTypeChange, onDestinationChange, isNew = false}) {
+  constructor({waypoint, allTypeOffers, destinations, onCloseClick, onFormSubmit, onDeleteClick, onEventTypeChange, onDestinationChange, mode = Mode.EDITING}) {
     super();
     this._setState(EditView.parseWaypointToState(waypoint, allTypeOffers));
     this.#destinations = destinations;
@@ -38,13 +39,13 @@ export default class EditView extends AbstractStatefulView {
     this.#handleEventTypeChange = onEventTypeChange;
     this.#handleDestinationChange = onDestinationChange;
 
-    this.#isNew = isNew;
+    this.#mode = mode;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations, this.#isNew);
+    return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations, this.#mode);
   }
 
   reset(waypoint) {
@@ -75,7 +76,7 @@ export default class EditView extends AbstractStatefulView {
 
 
   #setCloseHandlers = () => {
-    if (this.#isNew) {
+    if (this.#mode === Mode.NEW) {
       this.element.querySelector('.event__reset-btn')
         .addEventListener('click', this.#closeClickHandler);
       return;
@@ -130,8 +131,13 @@ export default class EditView extends AbstractStatefulView {
     waypoint.offers = checkedOffers;
   }
 
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    if (!isValidDateInterval(this._state['date_from'], this._state['date_to'])) {
+      return;
+    }
 
     const waypoint = EditView.parseStateToWaypoint(this._state);
     this.#updatePriceOf(waypoint);
@@ -154,6 +160,7 @@ export default class EditView extends AbstractStatefulView {
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state[`${dateKey}`],
         enableTime: true,
+        time_24hr: true,
         onChange: cb
       }
     );
