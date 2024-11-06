@@ -40,10 +40,6 @@ export default class NewWaypointPresenter {
       destinations: this.#destinationsModel.destinations,
       onCloseClick: this.#handleCloseClick,
       onFormSubmit: this.#handleFormSubmit,
-      // ❓ Так как EditView используется и для создания новой точки и для редактирования старой,
-      // пришлось передать пустую функцию для ненужного обработчика.
-      // Хорошо ли это?
-      onDeleteClick: () => {},
       onEventTypeChange: this.#handleEventTypeChange,
       onDestinationChange: this.#handleDestinationChange,
       mode: Mode.NEW

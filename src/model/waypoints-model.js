@@ -4,7 +4,7 @@ import { WAYPOINT_COUNT } from '/src/const';
 
 
 export default class WaypointsModel extends Observable {
-  #waypoints = []; // TODO: преобразовать в Set?
+  #waypoints = [];
 
 
   constructor(offersModel, destinationsModel) {
@@ -32,17 +32,13 @@ export default class WaypointsModel extends Observable {
       throw new Error('Can\'t update unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      updatedWaypoint,
-      ...this.#waypoints.slice(index + 1)
-    ];
+    this.#waypoints.splice(index, 1, updatedWaypoint);
 
     this._notify(updateType, updatedWaypoint);
   }
 
   add(updateType, newWaypoint) {
-    this.#waypoints = [newWaypoint, ...this.#waypoints];
+    this.#waypoints.unshift(newWaypoint);
 
     this._notify(updateType, newWaypoint);
   }
@@ -55,13 +51,11 @@ export default class WaypointsModel extends Observable {
       throw new Error('Can\'t delete unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      ...this.#waypoints.slice(index + 1)
-    ];
+    this.#waypoints.splice(index, 1);
 
     this._notify(updateType);
   }
+
 
   #enableSortFilterTestMode() {
     // FUTURE filter

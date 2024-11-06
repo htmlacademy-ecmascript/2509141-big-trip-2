@@ -51,13 +51,10 @@ export default class EventsPresenter {
 
   get waypoints() {
     this.#currentFilter = this.#filterModel.currentFilter;
+
     let waypoints = this.#waypointsModel.waypoints;
     waypoints = filter[this.#currentFilter](waypoints);
-    // ❓ Теперь при каждом запросе waypoints (например для проверки количества)
-    // происходит копированние массива, сортировка и прочие тяжёлые операции.
-    // Хорошо ли это?
-    // Может хотя бы выделить отдельную переменную waypointsCount в модели?
-    waypoints = this.#getSortedWaypoints([...waypoints]);
+    waypoints = this.#getSortedWaypoints(waypoints);
 
     return waypoints;
   }
@@ -74,9 +71,11 @@ export default class EventsPresenter {
   }
 
   #renderAll() {
-    if (this.waypoints.length > 0) {
+    const waypoints = this.waypoints;
+    // toSorted, toSpliced
+    if (waypoints.length > 0) {
       this.#renderSortView();
-      this.#renderWaypoints();
+      this.#renderWaypoints(waypoints);
     } else {
       this.#renderEmptyView(this.#currentFilter);
     }
@@ -87,6 +86,7 @@ export default class EventsPresenter {
       onSortTypeChange: this.#handleSortTypeChange,
       currentSortType: this.#currentSortType
     });
+
     render(this.#sortView, this.#container);
   }
 
@@ -95,9 +95,9 @@ export default class EventsPresenter {
     render(this.#emptyView, this.#container);
   }
 
-  #renderWaypoints() {
+  #renderWaypoints(waypoints) {
     render(this.#listView, this.#container);
-    this.waypoints.forEach(this.#renderWaypoint);
+    waypoints.forEach(this.#renderWaypoint);
   }
 
   #renderWaypoint = (waypoint) => {
@@ -115,8 +115,7 @@ export default class EventsPresenter {
     this.#waypointPresenters.set(waypoint.id, waypointPresenter);
   };
 
-  // ❓ {resetSortType = false} = {}
-  // Как это работает?
+
   #removeAll({resetSortType = false} = {}) {
     this.#clearWaypointList();
 
@@ -183,20 +182,17 @@ export default class EventsPresenter {
   #getSortedWaypoints(waypoints) {
     switch (this.#currentSortType) {
       case SortType.PRICE:
-        return waypoints.sort(sortByPrice);
+        return waypoints.toSorted(sortByPrice);
       case SortType.TIME:
-        return waypoints.sort(sortByDuration);
+        return waypoints.toSorted(sortByDuration);
       case SortType.DAY:
-        return waypoints.sort(sortByDate);
+        return waypoints.toSorted(sortByDate);
       default:
         return waypoints;
     }
   }
 
-  // ❓ Перенёс эти методы из WaypointPresenter сюда, так как они используются также и в NewWaypointPresenter
-  // Теперь EditView перенаправляет обработчик в WaypointPresenter/NewWaypointPresenter,
-  // а эти презентеры в свою очередь ничего с ними не делают, только ещё раз перенаправляют сюда, в EventsPresenter.
-  // Хорошо ли это?
+
   #handleEventTypeChange = (evt, scope, updateElement) => {
     const newType = evt.target.value;
     const newOffers = this.#offersModel.getOffersOfType(newType);
