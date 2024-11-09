@@ -1,4 +1,3 @@
-import { getRandomBool } from '../util/random';
 import { getObj } from '../util/util';
 
 
@@ -14,19 +13,6 @@ export default class OffersModel {
 
   getOffersOfType = (type) =>
     getObj(this.#offers, 'type', type.toLowerCase()).offers;
-
-  getRandomOffersOfType = (type) => {
-    const offers = [];
-    const typeOffers = this.getOffersOfType(type);
-
-    typeOffers.forEach((offer) => {
-      if (getRandomBool()) {
-        offers.push(offer);
-      }
-    });
-
-    return offers;
-  };
 
   getOfferOfTypeById(type, id) {
     const offers = this.getOffersOfType(type);

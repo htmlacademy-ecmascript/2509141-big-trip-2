@@ -3,6 +3,11 @@ import { Method, URL } from './const';
 
 
 export default class WaypointsApiService extends ApiService {
+  get waypoints() {
+    return this._load({url: URL.WAYPOINTS})
+      .then(ApiService.parseResponse);
+  }
+
   get destinations() {
     return this._load({url: URL.DESTINATIONS})
       .then(ApiService.parseResponse);
@@ -13,15 +18,10 @@ export default class WaypointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-  get waypoints() {
-    return this._load({url: URL.WAYPOINT})
-      .then(ApiService.parseResponse);
-  }
-
 
   async update(waypoint) {
     const config = {
-      url: `${URL.WAYPOINT}/${waypoint.id}`,
+      url: `${URL.WAYPOINTS}/${waypoint.id}`,
       method: Method.PUT,
       body: JSON.stringify(waypoint),
       headers: new Headers({'Content-Type': 'application/json'})

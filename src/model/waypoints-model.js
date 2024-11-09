@@ -32,7 +32,7 @@ export default class WaypointsModel extends Observable {
       await this.#destinationsModel.init();
       await this.#offersModel.init();
 
-      this.#waypoints.forEach(this.#assembleWaypoint);
+      this.#waypoints = this.#waypoints.map(this.#adaptToClient);
     } catch(err) {
       this.#waypoints = [];
     }
@@ -50,15 +50,18 @@ export default class WaypointsModel extends Observable {
     }
 
     try {
+      updatedWaypoint = this.#adaptToServer(updatedWaypoint);
       const response = await this.#waypointsApiService.update(updatedWaypoint);
-      this.#waypoints.splice(index, 1, response);
+      updatedWaypoint = this.#adaptToClient(response);
+
+      this.#waypoints.splice(index, 1, updatedWaypoint);
+
       this._notify(updateType, updatedWaypoint);
     } catch(err) {
       throw new Error('Can\'t update waypoint');
     }
-
-
   }
+
 
   add(updateType, newWaypoint) {
     this.#waypoints.unshift(newWaypoint);
@@ -79,22 +82,27 @@ export default class WaypointsModel extends Observable {
     this._notify(updateType);
   }
 
-  #assembleWaypoint = (waypoint) => {
-    waypoint.destination = this.#destinationsModel.getDestinationByID(waypoint.destination);
-    waypoint.offers = this.#offersModel.idsToOffers(waypoint);
+  #adaptToClient = (waypoint) => {
+    const adaptedWaypoint = {
+      ...waypoint,
+      destination: this.#destinationsModel.getDestinationByID(waypoint.destination),
+      offers: this.#offersModel.idsToOffers(waypoint),
+      'date_from': new Date(waypoint['date_from']),
+      'date_to': new Date(waypoint['date_to'])
+    };
+
+    return adaptedWaypoint;
   };
 
+  #adaptToServer(waypoint) {
+    const adaptedWaypoint = {
+      ...waypoint,
+      destination: waypoint.destination.id,
+      offers: waypoint.offers.map((offer) => offer.id),
+      'date_from': new Date(waypoint['date_from']),
+      'date_to': new Date(waypoint['date_to'])
+    };
 
-  #enableSortFilterTestMode() {
-    // FUTURE filter
-    let od = this.waypoints[1]['date_from'].getDate();
-    this.waypoints[1]['date_from'].setDate(od + 1);
-    od = this.waypoints[1]['date_to'].getDate();
-    this.waypoints[1]['date_to'].setDate(od + 1);
-    // PAST filter
-    od = this.waypoints[2]['date_from'].getDate();
-    this.waypoints[2]['date_from'].setDate(od - 3);
-    od = this.waypoints[2]['date_to'].getDate();
-    this.waypoints[2]['date_to'].setDate(od - 3);
+    return adaptedWaypoint;
   }
 }

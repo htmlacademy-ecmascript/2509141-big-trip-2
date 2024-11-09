@@ -1,4 +1,3 @@
-import { getRandomArrayElement } from '../util/random';
 import { getObj } from '../util/util';
 
 
@@ -23,9 +22,6 @@ export default class DestinationsModel {
   getDestinationByName(name) {
     return getObj(this.#destinations, 'name', name);
   }
-
-  getRandomDestination = () =>
-    getRandomArrayElement(this.#destinations);
 
 
   async init() {

@@ -51,7 +51,7 @@ const Method = {
 };
 
 const URL = {
-  WAYPOINT: 'points',
+  WAYPOINTS: 'points',
   DESTINATIONS: 'destinations',
   OFFERS: 'offers'
 };
