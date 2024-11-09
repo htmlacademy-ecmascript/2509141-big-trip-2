@@ -1,10 +1,16 @@
-import getAllDestinations from '../mock/destinations';
 import { getRandomArrayElement } from '../util/random';
 import { getObj } from '../util/util';
 
 
 export default class DestinationsModel {
-  #destinations = getAllDestinations();
+  #waypointsApiService = null;
+  #destinations = [];
+
+
+  constructor(waypointsApiService) {
+    this.#waypointsApiService = waypointsApiService;
+  }
+
 
   get destinations() {
     return this.#destinations;
@@ -20,4 +26,13 @@ export default class DestinationsModel {
 
   getRandomDestination = () =>
     getRandomArrayElement(this.#destinations);
+
+
+  async init() {
+    try {
+      this.#destinations = await this.#waypointsApiService.destinations;
+    } catch(err) {
+      throw new Error('You have got nowhere else to go');
+    }
+  }
 }

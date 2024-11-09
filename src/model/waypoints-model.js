@@ -1,22 +1,23 @@
 import Observable from '../framework/observable';
-import getRandomWaypoint from '/src/mock/waypoints';
-import { WAYPOINT_COUNT } from '/src/const';
+import { UpdateType } from '/src/const';
 
 
 export default class WaypointsModel extends Observable {
+  #waypointsApiService = null;
+
+  #destinationsModel = null;
+  #offersModel = null;
+
   #waypoints = [];
 
 
-  constructor(offersModel, destinationsModel) {
+  constructor(waypointsApiService, offersModel, destinationsModel) {
     super();
 
-    this.#waypoints = Array.from(
-      { length: WAYPOINT_COUNT },
-      () => getRandomWaypoint(offersModel.getRandomOffersOfType, destinationsModel.getRandomDestination)
-    );
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
 
-    // TEMP: для тестирования сортировки по дате и фильтров
-    this.#enableSortFilterTestMode();
+    this.#waypointsApiService = waypointsApiService;
   }
 
   get waypoints() {
@@ -24,7 +25,23 @@ export default class WaypointsModel extends Observable {
   }
 
 
-  update(updateType, updatedWaypoint) {
+  async init() {
+    try {
+      this.#waypoints = await this.#waypointsApiService.waypoints;
+
+      await this.#destinationsModel.init();
+      await this.#offersModel.init();
+
+      this.#waypoints.forEach(this.#assembleWaypoint);
+    } catch(err) {
+      this.#waypoints = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  }
+
+
+  async update(updateType, updatedWaypoint) {
     const isRequiredWaypoint = (waypoint) => (waypoint.id === updatedWaypoint.id);
     const index = this.#waypoints.findIndex(isRequiredWaypoint);
 
@@ -32,9 +49,15 @@ export default class WaypointsModel extends Observable {
       throw new Error('Can\'t update unexisting waypoint');
     }
 
-    this.#waypoints.splice(index, 1, updatedWaypoint);
+    try {
+      const response = await this.#waypointsApiService.update(updatedWaypoint);
+      this.#waypoints.splice(index, 1, response);
+      this._notify(updateType, updatedWaypoint);
+    } catch(err) {
+      throw new Error('Can\'t update waypoint');
+    }
 
-    this._notify(updateType, updatedWaypoint);
+
   }
 
   add(updateType, newWaypoint) {
@@ -55,6 +78,11 @@ export default class WaypointsModel extends Observable {
 
     this._notify(updateType);
   }
+
+  #assembleWaypoint = (waypoint) => {
+    waypoint.destination = this.#destinationsModel.getDestinationByID(waypoint.destination);
+    waypoint.offers = this.#offersModel.idsToOffers(waypoint);
+  };
 
 
   #enableSortFilterTestMode() {

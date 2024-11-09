@@ -4,6 +4,7 @@ import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
+import LoadingView from '../view/list/loading-view.js';
 import WaypointPresenter from './waypoint-presenter.js';
 import filter from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
@@ -11,20 +12,22 @@ import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 export default class EventsPresenter {
   #container = null;
-  #sortView = null;
-  #emptyView = null;
-  #listView = new ListView();
+  #sortComponent = null;
+  #emptyListComponent = null;
+  #listComponent = new ListView();
+  #loadingComponent = new LoadingView();
 
   #filterModel = null;
   #offersModel = null;
   #waypointsModel = null;
   #destinationsModel = null;
 
-  #currentFilter = DEFAULT_FILTER;
-  #currentSortType = DEFAULT_SORT_TYPE;
-
   #waypointPresenters = new Map();
   #newWaypointPresenter = null;
+
+  #currentFilter = DEFAULT_FILTER;
+  #currentSortType = DEFAULT_SORT_TYPE;
+  #isLoading = true;
 
 
   constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
@@ -35,7 +38,7 @@ export default class EventsPresenter {
     this.#destinationsModel = destinationsModel;
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
-      container: this.#listView.element,
+      container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
       onDestroy: onNewWaypointDestroy,
@@ -71,8 +74,12 @@ export default class EventsPresenter {
   }
 
   #renderAll() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const waypoints = this.waypoints;
-    // toSorted, toSpliced
     if (waypoints.length > 0) {
       this.#renderSortView();
       this.#renderWaypoints(waypoints);
@@ -82,27 +89,31 @@ export default class EventsPresenter {
   }
 
   #renderSortView() {
-    this.#sortView = new SortView({
+    this.#sortComponent = new SortView({
       onSortTypeChange: this.#handleSortTypeChange,
       currentSortType: this.#currentSortType
     });
 
-    render(this.#sortView, this.#container);
+    render(this.#sortComponent, this.#container);
   }
 
   #renderEmptyView() {
-    this.#emptyView = new EmptyView(this.#currentFilter);
-    render(this.#emptyView, this.#container);
+    this.#emptyListComponent = new EmptyView(this.#currentFilter);
+    render(this.#emptyListComponent, this.#container);
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#listComponent.element);
   }
 
   #renderWaypoints(waypoints) {
-    render(this.#listView, this.#container);
+    render(this.#listComponent, this.#container);
     waypoints.forEach(this.#renderWaypoint);
   }
 
   #renderWaypoint = (waypoint) => {
     const waypointPresenter = new WaypointPresenter({
-      container: this.#listView.element,
+      container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
       onDataChange: this.#handleViewAction,
@@ -119,8 +130,9 @@ export default class EventsPresenter {
   #removeAll({resetSortType = false} = {}) {
     this.#clearWaypointList();
 
-    remove(this.#sortView);
-    remove(this.#emptyView);
+    remove(this.#sortComponent);
+    remove(this.#emptyListComponent);
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = DEFAULT_SORT_TYPE;
@@ -159,6 +171,11 @@ export default class EventsPresenter {
         break;
       case UpdateType.MAJOR:
         this.#removeAll({resetSortType: true});
+        this.#renderAll();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderAll();
         break;
     }
