@@ -36,12 +36,24 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT'
 };
 
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
   NEW: 'NEW'
+};
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+const URL = {
+  WAYPOINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers'
 };
 
 export {
@@ -51,5 +63,6 @@ export {
   DateTimeFormat,
   WAYPOINT_COUNT,
   UserAction, UpdateType,
-  Mode
+  Mode,
+  Method, URL
 };

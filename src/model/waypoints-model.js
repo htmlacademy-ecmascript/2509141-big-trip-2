@@ -1,22 +1,23 @@
 import Observable from '../framework/observable';
-import getRandomWaypoint from '/src/mock/waypoints';
-import { WAYPOINT_COUNT } from '/src/const';
+import { UpdateType } from '/src/const';
 
 
 export default class WaypointsModel extends Observable {
-  #waypoints = []; // TODO: преобразовать в Set?
+  #waypointsApiService = null;
+
+  #destinationsModel = null;
+  #offersModel = null;
+
+  #waypoints = [];
 
 
-  constructor(offersModel, destinationsModel) {
+  constructor(waypointsApiService, offersModel, destinationsModel) {
     super();
 
-    this.#waypoints = Array.from(
-      { length: WAYPOINT_COUNT },
-      () => getRandomWaypoint(offersModel.getRandomOffersOfType, destinationsModel.getRandomDestination)
-    );
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
 
-    // TEMP: для тестирования сортировки по дате и фильтров
-    this.#enableSortFilterTestMode();
+    this.#waypointsApiService = waypointsApiService;
   }
 
   get waypoints() {
@@ -24,7 +25,23 @@ export default class WaypointsModel extends Observable {
   }
 
 
-  update(updateType, updatedWaypoint) {
+  async init() {
+    try {
+      this.#waypoints = await this.#waypointsApiService.waypoints;
+
+      await this.#destinationsModel.init();
+      await this.#offersModel.init();
+
+      this.#waypoints = this.#waypoints.map(this.#adaptToClient);
+    } catch(err) {
+      this.#waypoints = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  }
+
+
+  async update(updateType, updatedWaypoint) {
     const isRequiredWaypoint = (waypoint) => (waypoint.id === updatedWaypoint.id);
     const index = this.#waypoints.findIndex(isRequiredWaypoint);
 
@@ -32,17 +49,22 @@ export default class WaypointsModel extends Observable {
       throw new Error('Can\'t update unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      updatedWaypoint,
-      ...this.#waypoints.slice(index + 1)
-    ];
+    try {
+      updatedWaypoint = this.#adaptToServer(updatedWaypoint);
+      const response = await this.#waypointsApiService.update(updatedWaypoint);
+      updatedWaypoint = this.#adaptToClient(response);
 
-    this._notify(updateType, updatedWaypoint);
+      this.#waypoints.splice(index, 1, updatedWaypoint);
+
+      this._notify(updateType, updatedWaypoint);
+    } catch(err) {
+      throw new Error('Can\'t update waypoint');
+    }
   }
 
+
   add(updateType, newWaypoint) {
-    this.#waypoints = [newWaypoint, ...this.#waypoints];
+    this.#waypoints.unshift(newWaypoint);
 
     this._notify(updateType, newWaypoint);
   }
@@ -55,24 +77,32 @@ export default class WaypointsModel extends Observable {
       throw new Error('Can\'t delete unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      ...this.#waypoints.slice(index + 1)
-    ];
+    this.#waypoints.splice(index, 1);
 
     this._notify(updateType);
   }
 
-  #enableSortFilterTestMode() {
-    // FUTURE filter
-    let od = this.waypoints[1]['date_from'].getDate();
-    this.waypoints[1]['date_from'].setDate(od + 1);
-    od = this.waypoints[1]['date_to'].getDate();
-    this.waypoints[1]['date_to'].setDate(od + 1);
-    // PAST filter
-    od = this.waypoints[2]['date_from'].getDate();
-    this.waypoints[2]['date_from'].setDate(od - 3);
-    od = this.waypoints[2]['date_to'].getDate();
-    this.waypoints[2]['date_to'].setDate(od - 3);
+  #adaptToClient = (waypoint) => {
+    const adaptedWaypoint = {
+      ...waypoint,
+      destination: this.#destinationsModel.getDestinationByID(waypoint.destination),
+      offers: this.#offersModel.idsToOffers(waypoint),
+      'date_from': new Date(waypoint['date_from']),
+      'date_to': new Date(waypoint['date_to'])
+    };
+
+    return adaptedWaypoint;
+  };
+
+  #adaptToServer(waypoint) {
+    const adaptedWaypoint = {
+      ...waypoint,
+      destination: waypoint.destination.id,
+      offers: waypoint.offers.map((offer) => offer.id),
+      'date_from': new Date(waypoint['date_from']),
+      'date_to': new Date(waypoint['date_to'])
+    };
+
+    return adaptedWaypoint;
   }
 }

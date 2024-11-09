@@ -4,6 +4,7 @@ import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
+import LoadingView from '../view/list/loading-view.js';
 import WaypointPresenter from './waypoint-presenter.js';
 import filter from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
@@ -11,20 +12,22 @@ import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 export default class EventsPresenter {
   #container = null;
-  #sortView = null;
-  #emptyView = null;
-  #listView = new ListView();
+  #sortComponent = null;
+  #emptyListComponent = null;
+  #listComponent = new ListView();
+  #loadingComponent = new LoadingView();
 
   #filterModel = null;
   #offersModel = null;
   #waypointsModel = null;
   #destinationsModel = null;
 
-  #currentFilter = DEFAULT_FILTER;
-  #currentSortType = DEFAULT_SORT_TYPE;
-
   #waypointPresenters = new Map();
   #newWaypointPresenter = null;
+
+  #currentFilter = DEFAULT_FILTER;
+  #currentSortType = DEFAULT_SORT_TYPE;
+  #isLoading = true;
 
 
   constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
@@ -35,7 +38,7 @@ export default class EventsPresenter {
     this.#destinationsModel = destinationsModel;
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
-      container: this.#listView.element,
+      container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
       onDestroy: onNewWaypointDestroy,
@@ -51,13 +54,10 @@ export default class EventsPresenter {
 
   get waypoints() {
     this.#currentFilter = this.#filterModel.currentFilter;
+
     let waypoints = this.#waypointsModel.waypoints;
     waypoints = filter[this.#currentFilter](waypoints);
-    // ❓ Теперь при каждом запросе waypoints (например для проверки количества)
-    // происходит копированние массива, сортировка и прочие тяжёлые операции.
-    // Хорошо ли это?
-    // Может хотя бы выделить отдельную переменную waypointsCount в модели?
-    waypoints = this.#getSortedWaypoints([...waypoints]);
+    waypoints = this.#getSortedWaypoints(waypoints);
 
     return waypoints;
   }
@@ -74,35 +74,46 @@ export default class EventsPresenter {
   }
 
   #renderAll() {
-    if (this.waypoints.length > 0) {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    const waypoints = this.waypoints;
+    if (waypoints.length > 0) {
       this.#renderSortView();
-      this.#renderWaypoints();
+      this.#renderWaypoints(waypoints);
     } else {
       this.#renderEmptyView(this.#currentFilter);
     }
   }
 
   #renderSortView() {
-    this.#sortView = new SortView({
+    this.#sortComponent = new SortView({
       onSortTypeChange: this.#handleSortTypeChange,
       currentSortType: this.#currentSortType
     });
-    render(this.#sortView, this.#container);
+
+    render(this.#sortComponent, this.#container);
   }
 
   #renderEmptyView() {
-    this.#emptyView = new EmptyView(this.#currentFilter);
-    render(this.#emptyView, this.#container);
+    this.#emptyListComponent = new EmptyView(this.#currentFilter);
+    render(this.#emptyListComponent, this.#container);
   }
 
-  #renderWaypoints() {
-    render(this.#listView, this.#container);
-    this.waypoints.forEach(this.#renderWaypoint);
+  #renderLoading() {
+    render(this.#loadingComponent, this.#listComponent.element);
+  }
+
+  #renderWaypoints(waypoints) {
+    render(this.#listComponent, this.#container);
+    waypoints.forEach(this.#renderWaypoint);
   }
 
   #renderWaypoint = (waypoint) => {
     const waypointPresenter = new WaypointPresenter({
-      container: this.#listView.element,
+      container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
       onDataChange: this.#handleViewAction,
@@ -115,13 +126,13 @@ export default class EventsPresenter {
     this.#waypointPresenters.set(waypoint.id, waypointPresenter);
   };
 
-  // ❓ {resetSortType = false} = {}
-  // Как это работает?
+
   #removeAll({resetSortType = false} = {}) {
     this.#clearWaypointList();
 
-    remove(this.#sortView);
-    remove(this.#emptyView);
+    remove(this.#sortComponent);
+    remove(this.#emptyListComponent);
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = DEFAULT_SORT_TYPE;
@@ -162,6 +173,11 @@ export default class EventsPresenter {
         this.#removeAll({resetSortType: true});
         this.#renderAll();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderAll();
+        break;
     }
   };
 
@@ -183,20 +199,17 @@ export default class EventsPresenter {
   #getSortedWaypoints(waypoints) {
     switch (this.#currentSortType) {
       case SortType.PRICE:
-        return waypoints.sort(sortByPrice);
+        return waypoints.toSorted(sortByPrice);
       case SortType.TIME:
-        return waypoints.sort(sortByDuration);
+        return waypoints.toSorted(sortByDuration);
       case SortType.DAY:
-        return waypoints.sort(sortByDate);
+        return waypoints.toSorted(sortByDate);
       default:
         return waypoints;
     }
   }
 
-  // ❓ Перенёс эти методы из WaypointPresenter сюда, так как они используются также и в NewWaypointPresenter
-  // Теперь EditView перенаправляет обработчик в WaypointPresenter/NewWaypointPresenter,
-  // а эти презентеры в свою очередь ничего с ними не делают, только ещё раз перенаправляют сюда, в EventsPresenter.
-  // Хорошо ли это?
+
   #handleEventTypeChange = (evt, scope, updateElement) => {
     const newType = evt.target.value;
     const newOffers = this.#offersModel.getOffersOfType(newType);

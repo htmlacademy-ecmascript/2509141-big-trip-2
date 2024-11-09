@@ -118,7 +118,7 @@ export default class EditView extends AbstractStatefulView {
   };
 
   #inputToOffer = (input) => {
-    const id = Number(input.dataset.id);
+    const id = input.dataset.id;
     return getObj(this.#allTypeOffers, 'id', id);
   };
 

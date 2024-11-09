@@ -12,10 +12,7 @@ const createIdGeneratorInRange = (min, max) =>
 const humanizeDate = (date, format) =>
   date ? dayjs(date).format(format) : '';
 
-// ❓ Как в этом проекте предполагается настраивать валидацию?
-// Пока хватает встроенных ограничений HTML и проверки даты в момент сохранения.
-// Хорошо ли это? В предыдущем проекте для валидации использовался pristine.
-// Стоит ли и здесь им воспользоваться? Или это будет избыточно?
+
 const isValidDateInterval = (dateFrom, dateTo) =>
   dateFrom.getTime() < dateTo.getTime();
 
