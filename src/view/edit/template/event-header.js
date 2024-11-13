@@ -48,7 +48,9 @@ const createEventHeaderTemplate = (waypoint, destinations, mode, status) => {
       <input class="event__input  event__input--price" id="event-price-${id}" type="number" min="1" name="event-price" value="${price}" ${status.isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit" ${status.isDisabled ? 'disabled' : ''}>Save</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${status.isDisabled ? 'disabled' : ''}>
+      ${status.isSaving ? 'Saving...' : 'Save'}
+    </button>
     ${mode === Mode.NEW ? createCancelButtonTemplate(status) : createDeleteButtonTemplate(status)}
     ${mode === Mode.NEW ? '' : createRollupButtonTemplate(status)}
   </header>`);
