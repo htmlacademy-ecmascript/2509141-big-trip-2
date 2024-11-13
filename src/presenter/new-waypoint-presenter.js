@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { isEscapeKey } from '../util/util';
 import { DEFAULT_TYPE, Mode, UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition } from '../framework/render';
@@ -65,7 +64,6 @@ export default class NewWaypointPresenter {
 
 
   #makeBlankWaypoint = () => ({
-    'id': nanoid(),
     'type': DEFAULT_TYPE,
     'base_price': 0,
     'is_favorite': false,
@@ -79,7 +77,7 @@ export default class NewWaypointPresenter {
     this.#handleDataChange(
       UserAction.ADD,
       UpdateType.MINOR,
-      {id: nanoid(), ...waypoint}
+      waypoint
     );
 
     this.destroy();

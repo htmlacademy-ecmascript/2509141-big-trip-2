@@ -63,13 +63,21 @@ export default class WaypointsModel extends Observable {
   }
 
 
-  add(updateType, newWaypoint) {
-    this.#waypoints.unshift(newWaypoint);
+  async add(updateType, newWaypoint) {
+    try {
+      newWaypoint = this.#adaptToServer(newWaypoint);
+      const response = await this.#waypointsApiService.add(newWaypoint);
+      newWaypoint = this.#adaptToClient(response);
 
-    this._notify(updateType, newWaypoint);
+      this.#waypoints.unshift(newWaypoint);
+
+      this._notify(updateType, newWaypoint);
+    } catch(err) {
+      throw new Error('Can\'t add waypoint');
+    }
   }
 
-  delete(updateType, deletedWaypoint) {
+  async delete(updateType, deletedWaypoint) {
     const isRequiredWaypoint = (waypoint) => (waypoint.id === deletedWaypoint.id);
     const index = this.#waypoints.findIndex(isRequiredWaypoint);
 
@@ -77,10 +85,18 @@ export default class WaypointsModel extends Observable {
       throw new Error('Can\'t delete unexisting waypoint');
     }
 
-    this.#waypoints.splice(index, 1);
+    try {
+      await this.#waypointsApiService.delete(deletedWaypoint);
 
-    this._notify(updateType);
+      this.#waypoints.splice(index, 1);
+
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete waypoint');
+    }
+
   }
+
 
   #adaptToClient = (waypoint) => {
     const adaptedWaypoint = {
@@ -97,6 +113,7 @@ export default class WaypointsModel extends Observable {
   #adaptToServer(waypoint) {
     const adaptedWaypoint = {
       ...waypoint,
+      type: waypoint.type.toLowerCase(), // TODO: унифицировать наконец
       destination: waypoint.destination.id,
       offers: waypoint.offers.map((offer) => offer.id),
       'date_from': new Date(waypoint['date_from']),

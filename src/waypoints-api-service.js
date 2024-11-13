@@ -32,4 +32,29 @@ export default class WaypointsApiService extends ApiService {
 
     return parsedResponse;
   }
+
+  async add(waypoint) {
+    const config = {
+      url: URL.WAYPOINTS,
+      method: Method.POST,
+      body: JSON.stringify(waypoint),
+      headers: new Headers({'Content-Type': 'application/json'})
+    };
+
+    const response = await this._load(config);
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  async delete(waypoint) {
+    const config = {
+      url: `${URL.WAYPOINTS}/${waypoint.id}`,
+      method: Method.DELETE
+    };
+
+    const response = await this._load(config);
+
+    return response;
+  }
 }
