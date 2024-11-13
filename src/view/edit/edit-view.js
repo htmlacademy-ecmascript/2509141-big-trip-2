@@ -7,10 +7,16 @@ import flatpickr from 'flatpickr';
 import '/node_modules/flatpickr/dist/flatpickr.min.css';
 
 
-const createEditTemplate = (waypoint, allTypeOffers, destinations, mode) =>
+class Status {
+  isDisabled = true;
+  isSaving = false;
+  isDeleting = false;
+}
+
+const createEditTemplate = (waypoint, allTypeOffers, destinations, mode, status = new Status) =>
   `<form class="event event--edit" action="#" method="post">
-    ${createEventHeaderTemplate(waypoint, destinations, mode)}
-    ${createEventDetailsTemplate(waypoint, allTypeOffers)}
+    ${createEventHeaderTemplate(waypoint, destinations, mode, status)}
+    ${createEventDetailsTemplate(waypoint, allTypeOffers, status)}
   </form>`;
 
 
@@ -160,7 +166,7 @@ export default class EditView extends AbstractStatefulView {
         dateFormat: 'j/m/y H:i',
         defaultDate: this._state[`${dateKey}`],
         enableTime: true,
-        time_24hr: true,
+        time_24hr: true, // ❓ Параметры сторонней библиотеки нарушают правила линтера. Хорошо ли это?
         onChange: cb
       }
     );
