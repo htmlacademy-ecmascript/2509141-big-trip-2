@@ -1,6 +1,7 @@
 import { render, remove } from '/src/framework/render.js';
-import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction } from '../const.js';
+import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const.js';
 import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
+import UiBlocker from '/src/framework/ui-blocker/ui-blocker'
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
@@ -28,6 +29,10 @@ export default class EventsPresenter {
   #currentFilter = DEFAULT_FILTER;
   #currentSortType = DEFAULT_SORT_TYPE;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
 
   constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
@@ -147,6 +152,10 @@ export default class EventsPresenter {
 
 
   #handleViewAction = async (actionType, updateType, waypoint) => {
+    // ❓ Зачем блокировать каждую кнопку через isDisable,
+    // если uiBlocker всё равно блокирует весь интерфейс?
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE:
         this.#waypointPresenters.get(waypoint.id).setSaving();
@@ -178,6 +187,8 @@ export default class EventsPresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   async #update(updateType, waypoint) {

@@ -58,6 +58,12 @@ const URL = {
   OFFERS: 'offers'
 };
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+
 export {
   TYPES, DEFAULT_TYPE,
   FilterType, DEFAULT_FILTER,
@@ -66,5 +72,6 @@ export {
   WAYPOINT_COUNT,
   UserAction, UpdateType,
   Mode,
-  Method, URL
+  Method, URL,
+  TimeLimit
 };
