@@ -50,7 +50,6 @@ export default class NewWaypointPresenter {
   }
 
   destroy() {
-    console.log('destroy');
     if (this.#editFormComponent === null) {
       return;
     }
@@ -68,6 +67,19 @@ export default class NewWaypointPresenter {
       isDisabled: true,
       isSaving: true,
     });
+  }
+
+  setAborting() {
+    // ❓ Объеденить бы isDisabled, isSaving и isDeleting в один класс с методом resetFormState...
+    const resetFormState = () => {
+      this.#editFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editFormComponent.shake(resetFormState);
   }
 
 

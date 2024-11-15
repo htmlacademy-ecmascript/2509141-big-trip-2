@@ -146,22 +146,50 @@ export default class EventsPresenter {
   }
 
 
-  #handleViewAction = (actionType, updateType, waypoint) => {
+  #handleViewAction = async (actionType, updateType, waypoint) => {
     switch (actionType) {
       case UserAction.UPDATE:
         this.#waypointPresenters.get(waypoint.id).setSaving();
-        this.#waypointsModel.update(updateType, waypoint);
+
+        try {
+          await this.#waypointsModel.update(updateType, waypoint);
+        } catch(err) {
+          this.#waypointPresenters.get(waypoint.id).setAborting();
+        }
         break;
+
       case UserAction.ADD:
         this.#newWaypointPresenter.setSaving();
-        this.#waypointsModel.add(updateType, waypoint);
+
+        try {
+          await this.#waypointsModel.add(updateType, waypoint);
+        } catch (err) {
+          this.#newWaypointPresenter.setAborting();
+        }
         break;
+
       case UserAction.DELETE:
         this.#waypointPresenters.get(waypoint.id).setDeleting();
-        this.#waypointsModel.delete(updateType, waypoint);
+
+        try {
+          this.#waypointsModel.delete(updateType, waypoint);
+        } catch (err) {
+          this.#waypointPresenters.get(waypoint.id).setAborting();
+        }
         break;
     }
   };
+
+  async #update(updateType, waypoint) {
+    this.#waypointPresenters.get(waypoint.id).setSaving();
+
+    try {
+      await this.#waypointsModel.update(updateType, waypoint);
+    } catch(err) {
+      this.#waypointPresenters.get(waypoint.id).setAborting();
+    }
+  }
+
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
