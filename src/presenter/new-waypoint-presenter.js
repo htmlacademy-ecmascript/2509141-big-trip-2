@@ -50,6 +50,7 @@ export default class NewWaypointPresenter {
   }
 
   destroy() {
+    console.log('destroy');
     if (this.#editFormComponent === null) {
       return;
     }
@@ -60,6 +61,13 @@ export default class NewWaypointPresenter {
     this.#editFormComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  setSaving() {
+    this.#editFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
   }
 
 
@@ -79,8 +87,6 @@ export default class NewWaypointPresenter {
       UpdateType.MINOR,
       waypoint
     );
-
-    this.destroy();
   };
 
   #handleCloseClick = () =>

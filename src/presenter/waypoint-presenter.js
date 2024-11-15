@@ -56,6 +56,24 @@ export default class WaypointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
 
   #render() {
     const prevWaypointComponent = this.#waypointComponent;
@@ -103,6 +121,10 @@ export default class WaypointPresenter {
 
   #renderEditFormComponent(prevEditFormComponent) {
     this.#renderComponent(Mode.EDITING, this.#editFormComponent, prevEditFormComponent);
+
+    // ❓ По аналогии с taskmanager-demo 8.2.3 (268e3cc). Но зачем?
+    // this.#renderComponent(Mode.EDITING, this.#waypointComponent, prevEditFormComponent);
+    // this.#mode = Mode.DEFAULT;
   }
 
   #renderComponent(mode, newComponent, oldComponent) {
@@ -167,7 +189,5 @@ export default class WaypointPresenter {
       updateType,
       updatedWaypoint
     );
-
-    this.#replaceToWaypoint();
   };
 }

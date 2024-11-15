@@ -13,10 +13,10 @@ class Status {
   isDeleting = false;
 }
 
-const createEditTemplate = (waypoint, allTypeOffers, destinations, mode, status = new Status) =>
+const createEditTemplate = (waypoint, allTypeOffers, destinations, mode) =>
   `<form class="event event--edit" action="#" method="post">
-    ${createEventHeaderTemplate(waypoint, destinations, mode, status)}
-    ${createEventDetailsTemplate(waypoint, allTypeOffers, status)}
+    ${createEventHeaderTemplate(waypoint, destinations, mode)}
+    ${createEventDetailsTemplate(waypoint, allTypeOffers)}
   </form>`;
 
 
@@ -160,16 +160,17 @@ export default class EditView extends AbstractStatefulView {
     this.updateElement({'date_to': userDate});
 
   #makeFlatpickr(selector, dateKey, cb) {
-    return flatpickr(
-      this.element.querySelector(`[name="event-${selector}-time"]`),
-      {
-        dateFormat: 'j/m/y H:i',
-        defaultDate: this._state[`${dateKey}`],
-        enableTime: true,
-        time_24hr: true, // ❓ Параметры сторонней библиотеки нарушают правила линтера. Хорошо ли это?
-        onChange: cb
-      }
-    );
+    selector = this.element.querySelector(`[name="event-${selector}-time"]`);
+
+    const config = {
+      dateFormat: 'j/m/y H:i',
+      defaultDate: this._state[`${dateKey}`],
+      enableTime: true,
+      time_24hr: true, // ❓ Параметры сторонней библиотеки нарушают правила линтера. Хорошо ли это?
+      onChange: cb
+    };
+
+    return flatpickr(selector, config);
   }
 
   #setDatepicker() {
@@ -179,12 +180,22 @@ export default class EditView extends AbstractStatefulView {
 
 
   static parseWaypointToState(waypoint, allTypeOffers) {
-    return {...waypoint, allTypeOffers};
+    return {
+      ...waypoint,
+      allTypeOffers,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    };
   }
 
   static parseStateToWaypoint(state) {
     const waypoint = {...state};
+
     delete waypoint.allTypeOffers;
+    delete waypoint.isDisabled;
+    delete waypoint.isDeleting;
+    delete waypoint.isSaving;
 
     return waypoint;
   }

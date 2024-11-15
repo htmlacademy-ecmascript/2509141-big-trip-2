@@ -146,16 +146,19 @@ export default class EventsPresenter {
   }
 
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = (actionType, updateType, waypoint) => {
     switch (actionType) {
       case UserAction.UPDATE:
-        this.#waypointsModel.update(updateType, update);
+        this.#waypointPresenters.get(waypoint.id).setSaving();
+        this.#waypointsModel.update(updateType, waypoint);
         break;
       case UserAction.ADD:
-        this.#waypointsModel.add(updateType, update);
+        this.#newWaypointPresenter.setSaving();
+        this.#waypointsModel.add(updateType, waypoint);
         break;
       case UserAction.DELETE:
-        this.#waypointsModel.delete(updateType, update);
+        this.#waypointPresenters.get(waypoint.id).setDeleting();
+        this.#waypointsModel.delete(updateType, waypoint);
         break;
     }
   };
