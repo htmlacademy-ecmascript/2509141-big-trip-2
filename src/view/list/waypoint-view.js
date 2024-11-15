@@ -35,10 +35,10 @@ const createWaypointTemplate = (waypoint) => {
     type,
     offers,
     destination: { name },
-    'date_from': start,
-    'date_to': end,
-    'is_favorite': isFavorite,
-    'base_price': price
+    dateFrom: start,
+    dateTo: end,
+    isFavorite: isFavorite,
+    price: price
   } = waypoint;
 
   const offerElements = offers.map(createOfferTemplate).join('');

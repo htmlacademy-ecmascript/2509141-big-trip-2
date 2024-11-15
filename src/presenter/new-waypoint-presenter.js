@@ -84,13 +84,13 @@ export default class NewWaypointPresenter {
 
 
   #makeBlankWaypoint = () => ({
-    'type': DEFAULT_TYPE,
-    'base_price': 0,
-    'is_favorite': false,
-    'date_from': new Date(),
-    'date_to': new Date(Date.now() + 60000),
-    'destination': null,
-    'offers': []
+    type: DEFAULT_TYPE,
+    price: 0,
+    isFavorite: false,
+    dateFrom: new Date(),
+    dateTo: new Date(Date.now() + 60000),
+    destination: null,
+    offers: []
   });
 
   #handleFormSubmit = (waypoint) => {

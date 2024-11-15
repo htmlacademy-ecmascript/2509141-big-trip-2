@@ -7,12 +7,6 @@ import flatpickr from 'flatpickr';
 import '/node_modules/flatpickr/dist/flatpickr.min.css';
 
 
-class Status {
-  isDisabled = true;
-  isSaving = false;
-  isDeleting = false;
-}
-
 const createEditTemplate = (waypoint, allTypeOffers, destinations, mode) =>
   `<form class="event event--edit" action="#" method="post">
     ${createEventHeaderTemplate(waypoint, destinations, mode)}
@@ -116,10 +110,10 @@ export default class EditView extends AbstractStatefulView {
 
   #updatePriceOf = (waypoint) => {
     const newPrice = Number(this.element.querySelector('.event__input--price').value);
-    const oldPrice = waypoint['base_price'];
+    const oldPrice = waypoint.price;
 
     if (newPrice !== oldPrice) {
-      waypoint['base_price'] = newPrice;
+      waypoint.price = newPrice;
     }
   };
 
@@ -141,7 +135,7 @@ export default class EditView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
-    if (!isValidDateInterval(this._state['date_from'], this._state['date_to'])) {
+    if (!isValidDateInterval(this._state.dateFrom, this._state.dateTo)) {
       return;
     }
 
@@ -154,10 +148,10 @@ export default class EditView extends AbstractStatefulView {
 
 
   #dateFromChangeHandler = ([userDate]) =>
-    this.updateElement({'date_from': userDate});
+    this.updateElement({dateFrom: userDate});
 
   #dateToChangeHandler = ([userDate]) =>
-    this.updateElement({'date_to': userDate});
+    this.updateElement({dateTo: userDate});
 
   #makeFlatpickr(selector, dateKey, cb) {
     selector = this.element.querySelector(`[name="event-${selector}-time"]`);
@@ -174,8 +168,8 @@ export default class EditView extends AbstractStatefulView {
   }
 
   #setDatepicker() {
-    this.#datepickerFrom = this.#makeFlatpickr('start', 'date_from', this.#dateFromChangeHandler);
-    this.#datepickerTo = this.#makeFlatpickr('end', 'date_to', this.#dateToChangeHandler);
+    this.#datepickerFrom = this.#makeFlatpickr('start', 'dateFrom', this.#dateFromChangeHandler);
+    this.#datepickerTo = this.#makeFlatpickr('end', 'dateTo', this.#dateToChangeHandler);
   }
 
 

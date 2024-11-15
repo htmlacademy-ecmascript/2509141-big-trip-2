@@ -158,33 +158,13 @@ export default class EventsPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE:
-        this.#waypointPresenters.get(waypoint.id).setSaving();
-
-        try {
-          await this.#waypointsModel.update(updateType, waypoint);
-        } catch(err) {
-          this.#waypointPresenters.get(waypoint.id).setAborting();
-        }
+        this.#update(updateType, waypoint);
         break;
-
       case UserAction.ADD:
-        this.#newWaypointPresenter.setSaving();
-
-        try {
-          await this.#waypointsModel.add(updateType, waypoint);
-        } catch (err) {
-          this.#newWaypointPresenter.setAborting();
-        }
+        this.#add(updateType, waypoint);
         break;
-
       case UserAction.DELETE:
-        this.#waypointPresenters.get(waypoint.id).setDeleting();
-
-        try {
-          this.#waypointsModel.delete(updateType, waypoint);
-        } catch (err) {
-          this.#waypointPresenters.get(waypoint.id).setAborting();
-        }
+        this.#delete(updateType, waypoint);
         break;
     }
 
@@ -197,6 +177,26 @@ export default class EventsPresenter {
     try {
       await this.#waypointsModel.update(updateType, waypoint);
     } catch(err) {
+      this.#waypointPresenters.get(waypoint.id).setAborting();
+    }
+  }
+
+  async #add(updateType, waypoint) {
+    this.#newWaypointPresenter.setSaving();
+
+    try {
+      await this.#waypointsModel.add(updateType, waypoint);
+    } catch (err) {
+      this.#newWaypointPresenter.setAborting();
+    }
+  }
+
+  async #delete(updateType, waypoint) {
+    this.#waypointPresenters.get(waypoint.id).setDeleting();
+
+    try {
+      this.#waypointsModel.delete(updateType, waypoint);
+    } catch (err) {
       this.#waypointPresenters.get(waypoint.id).setAborting();
     }
   }

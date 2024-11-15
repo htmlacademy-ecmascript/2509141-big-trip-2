@@ -10,10 +10,10 @@ const createOptionTemplate = ({name}) =>
 
 
 const createEventHeaderTemplate = (waypoint, destinations, mode) => {
-  const { id, type, destination, 'base_price': price, isDisabled, isSaving } = waypoint;
+  const { id, type, destination, price, isDisabled, isSaving } = waypoint;
 
-  const start = humanizeDate(waypoint['date_from'], DateTimeFormat.EDIT);
-  const end = humanizeDate(waypoint['date_to'], DateTimeFormat.EDIT);
+  const start = humanizeDate(waypoint.dateFrom, DateTimeFormat.EDIT);
+  const end = humanizeDate(waypoint.dateTo, DateTimeFormat.EDIT);
 
   const name = destination?.name ?? '';
 

@@ -103,8 +103,10 @@ export default class WaypointsModel extends Observable {
       ...waypoint,
       destination: this.#destinationsModel.getDestinationByID(waypoint.destination),
       offers: this.#offersModel.idsToOffers(waypoint),
-      'date_from': new Date(waypoint['date_from']),
-      'date_to': new Date(waypoint['date_to'])
+      dateFrom: new Date(waypoint['date_from']),
+      dateTo: new Date(waypoint['date_to']),
+      isFavorite: waypoint['is_favorite'],
+      price: waypoint['base_price']
     };
 
     return adaptedWaypoint;
@@ -116,9 +118,16 @@ export default class WaypointsModel extends Observable {
       type: waypoint.type.toLowerCase(), // TODO: унифицировать наконец
       destination: waypoint.destination.id,
       offers: waypoint.offers.map((offer) => offer.id),
-      'date_from': new Date(waypoint['date_from']),
-      'date_to': new Date(waypoint['date_to'])
+      'date_from': new Date(waypoint.dateFrom),
+      'date_to': new Date(waypoint.dateTo),
+      'is_favorite': waypoint.isFavorite,
+      'base_price': waypoint.price
     };
+
+    delete adaptedWaypoint.dateFrom;
+    delete adaptedWaypoint.dateTo;
+    delete adaptedWaypoint.isFavorite;
+    delete adaptedWaypoint.price;
 
     return adaptedWaypoint;
   }

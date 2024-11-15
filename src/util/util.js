@@ -28,9 +28,9 @@ const hasObjWithId = (array, id) =>
 
 
 const isMinor = (waypoint, updatedWaypoint) => {
-  const priceChanged = waypoint['base_price'] !== updatedWaypoint['base_price'];
-  const startDayChanged = waypoint['date_from'].getTime() !== updatedWaypoint['date_from'].getTime();
-  const endDayChanged = waypoint['date_to'].getTime() !== updatedWaypoint['date_to'].getTime();
+  const priceChanged = waypoint.price !== updatedWaypoint.price;
+  const startDayChanged = waypoint.dateFrom.getTime() !== updatedWaypoint.dateFrom.getTime();
+  const endDayChanged = waypoint.dateTo.getTime() !== updatedWaypoint.dateTo.getTime();
 
   return priceChanged || startDayChanged || endDayChanged;
 };

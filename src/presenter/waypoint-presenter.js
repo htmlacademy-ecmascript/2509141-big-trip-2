@@ -175,7 +175,7 @@ export default class WaypointPresenter {
   #handleFavoriteClick = () => {
     const updatedWaypoint = {
       ...this.#waypoint,
-      'is_favorite': !this.#waypoint['is_favorite']
+      isFavorite: !this.#waypoint.isFavorite
     };
 
     this.#handleDataChange(
