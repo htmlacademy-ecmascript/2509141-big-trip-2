@@ -1,7 +1,7 @@
 import { render, remove } from '/src/framework/render.js';
 import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const.js';
 import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
-import UiBlocker from '/src/framework/ui-blocker/ui-blocker'
+import UiBlocker from '/src/framework/ui-blocker/ui-blocker';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
@@ -11,6 +11,7 @@ import filter from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 
+// ❓ Модули EventsPresenter, EditView слишком большие. Возможно ли разбить их?
 export default class EventsPresenter {
   #container = null;
   #sortComponent = null;
@@ -153,18 +154,18 @@ export default class EventsPresenter {
 
   #handleViewAction = async (actionType, updateType, waypoint) => {
     // ❓ Зачем блокировать каждую кнопку через isDisable,
-    // если uiBlocker всё равно блокирует весь интерфейс?
-    this.#uiBlocker.block();
+    // если UiBlocker всё равно блокирует весь интерфейс?
+    this.#uiBlocker.block(); // ❓ Почему между кликом и блокировкой проходит так много времени?
 
     switch (actionType) {
       case UserAction.UPDATE:
-        this.#update(updateType, waypoint);
+        await this.#update(updateType, waypoint);
         break;
       case UserAction.ADD:
-        this.#add(updateType, waypoint);
+        await this.#add(updateType, waypoint);
         break;
       case UserAction.DELETE:
-        this.#delete(updateType, waypoint);
+        await this.#delete(updateType, waypoint); // ❓ Почему UiBlocker не работает именно во время удаления точки?
         break;
     }
 
