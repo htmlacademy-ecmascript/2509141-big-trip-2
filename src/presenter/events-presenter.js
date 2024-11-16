@@ -11,7 +11,6 @@ import filter from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 
-// ❓ Модули EventsPresenter, EditView слишком большие. Возможно ли разбить их?
 export default class EventsPresenter {
   #container = null;
   #sortComponent = null;
@@ -153,9 +152,7 @@ export default class EventsPresenter {
 
 
   #handleViewAction = async (actionType, updateType, waypoint) => {
-    // ❓ Зачем блокировать каждую кнопку через isDisable,
-    // если UiBlocker всё равно блокирует весь интерфейс?
-    this.#uiBlocker.block(); // ❓ Почему между кликом и блокировкой проходит так много времени?
+    this.#uiBlocker.block();
 
     switch (actionType) {
       case UserAction.UPDATE:
@@ -165,7 +162,7 @@ export default class EventsPresenter {
         await this.#add(updateType, waypoint);
         break;
       case UserAction.DELETE:
-        await this.#delete(updateType, waypoint); // ❓ Почему UiBlocker не работает именно во время удаления точки?
+        await this.#delete(updateType, waypoint);
         break;
     }
 

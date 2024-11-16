@@ -137,11 +137,8 @@ export default class WaypointPresenter {
   }
 
   #renderEditFormComponent(prevEditFormComponent) {
-    this.#renderComponent(Mode.EDITING, this.#editFormComponent, prevEditFormComponent);
-
-    // ❓ По аналогии с taskmanager-demo 8.2.3 (268e3cc). Но зачем?
-    // this.#renderComponent(Mode.EDITING, this.#waypointComponent, prevEditFormComponent);
-    // this.#mode = Mode.DEFAULT;
+    this.#renderComponent(Mode.EDITING, this.#waypointComponent, prevEditFormComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   #renderComponent(mode, newComponent, oldComponent) {

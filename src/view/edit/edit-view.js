@@ -160,7 +160,7 @@ export default class EditView extends AbstractStatefulView {
       dateFormat: 'j/m/y H:i',
       defaultDate: this._state[`${dateKey}`],
       enableTime: true,
-      time_24hr: true, // ❓ Параметры сторонней библиотеки нарушают правила линтера. Хорошо ли это?
+      'time_24hr': true,
       onChange: cb
     };
 
