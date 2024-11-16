@@ -108,7 +108,7 @@ export default class EventsPresenter {
   }
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#listComponent.element);
+    render(this.#loadingComponent, this.#container);
   }
 
   #renderWaypoints(waypoints) {

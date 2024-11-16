@@ -42,6 +42,7 @@ filterPresenter.init();
 
 
 const newWaypointComponent = new NewWaypointButtonView({onClick: handleNewWaypointButtonClick});
+newWaypointComponent.element.disabled = true;
 
 function handleNewWaypointFormClose() {
   newWaypointComponent.element.disabled = false;
@@ -54,7 +55,10 @@ function handleNewWaypointButtonClick() {
 
 const siteHeaderElement = document.querySelector('.trip-main');
 
+render(newWaypointComponent, siteHeaderElement);
+
+
 waypointsModel.init()
   .finally(() => {
-    render(newWaypointComponent, siteHeaderElement);
+    newWaypointComponent.element.disabled = false;
   });
