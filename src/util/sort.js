@@ -2,18 +2,18 @@ import dayjs from 'dayjs';
 
 
 function sortByDate(a, b) {
-  return dayjs(b['date_from']).diff(a['date_from']);
+  return dayjs(b.dateFrom).diff(a.dateFrom);
 }
 
 function sortByDuration(a, b) {
-  const durA = dayjs.duration(dayjs(a['date_to']).diff(a['date_from'])).asMilliseconds();
-  const durB = dayjs.duration(dayjs(b['date_to']).diff(b['date_from'])).asMilliseconds();
+  const durA = dayjs.duration(dayjs(a.dateTo).diff(a.dateFrom)).asMilliseconds();
+  const durB = dayjs.duration(dayjs(b.dateTo).diff(b.dateFrom)).asMilliseconds();
 
   return durB - durA;
 }
 
 function sortByPrice(a, b) {
-  return b['base_price'] - a['base_price'];
+  return b.price - a.price;
 }
 
 export {

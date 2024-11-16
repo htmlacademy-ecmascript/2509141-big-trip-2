@@ -56,6 +56,41 @@ export default class WaypointPresenter {
     }
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#waypointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this.#editFormComponent.shake(resetFormState);
+  }
+
 
   #render() {
     const prevWaypointComponent = this.#waypointComponent;
@@ -103,6 +138,10 @@ export default class WaypointPresenter {
 
   #renderEditFormComponent(prevEditFormComponent) {
     this.#renderComponent(Mode.EDITING, this.#editFormComponent, prevEditFormComponent);
+
+    // ❓ По аналогии с taskmanager-demo 8.2.3 (268e3cc). Но зачем?
+    // this.#renderComponent(Mode.EDITING, this.#waypointComponent, prevEditFormComponent);
+    // this.#mode = Mode.DEFAULT;
   }
 
   #renderComponent(mode, newComponent, oldComponent) {
@@ -136,7 +175,7 @@ export default class WaypointPresenter {
   #handleFavoriteClick = () => {
     const updatedWaypoint = {
       ...this.#waypoint,
-      'is_favorite': !this.#waypoint['is_favorite']
+      isFavorite: !this.#waypoint.isFavorite
     };
 
     this.#handleDataChange(
@@ -167,7 +206,5 @@ export default class WaypointPresenter {
       updateType,
       updatedWaypoint
     );
-
-    this.#replaceToWaypoint();
   };
 }

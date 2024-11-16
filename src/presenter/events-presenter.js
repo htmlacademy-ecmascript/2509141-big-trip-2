@@ -1,6 +1,7 @@
 import { render, remove } from '/src/framework/render.js';
-import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction } from '../const.js';
+import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const.js';
 import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
+import UiBlocker from '/src/framework/ui-blocker/ui-blocker';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
 import EmptyView from '../view/list/empty-view.js';
@@ -10,6 +11,7 @@ import filter from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 
 
+// ❓ Модули EventsPresenter, EditView слишком большие. Возможно ли разбить их?
 export default class EventsPresenter {
   #container = null;
   #sortComponent = null;
@@ -28,6 +30,10 @@ export default class EventsPresenter {
   #currentFilter = DEFAULT_FILTER;
   #currentSortType = DEFAULT_SORT_TYPE;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
 
   constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
@@ -103,7 +109,7 @@ export default class EventsPresenter {
   }
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#listComponent.element);
+    render(this.#loadingComponent, this.#container);
   }
 
   #renderWaypoints(waypoints) {
@@ -146,19 +152,56 @@ export default class EventsPresenter {
   }
 
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, waypoint) => {
+    // ❓ Зачем блокировать каждую кнопку через isDisable,
+    // если UiBlocker всё равно блокирует весь интерфейс?
+    this.#uiBlocker.block(); // ❓ Почему между кликом и блокировкой проходит так много времени?
+
     switch (actionType) {
       case UserAction.UPDATE:
-        this.#waypointsModel.update(updateType, update);
+        await this.#update(updateType, waypoint);
         break;
       case UserAction.ADD:
-        this.#waypointsModel.add(updateType, update);
+        await this.#add(updateType, waypoint);
         break;
       case UserAction.DELETE:
-        this.#waypointsModel.delete(updateType, update);
+        await this.#delete(updateType, waypoint); // ❓ Почему UiBlocker не работает именно во время удаления точки?
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
+
+  async #update(updateType, waypoint) {
+    this.#waypointPresenters.get(waypoint.id).setSaving();
+
+    try {
+      await this.#waypointsModel.update(updateType, waypoint);
+    } catch(err) {
+      this.#waypointPresenters.get(waypoint.id).setAborting();
+    }
+  }
+
+  async #add(updateType, waypoint) {
+    this.#newWaypointPresenter.setSaving();
+
+    try {
+      await this.#waypointsModel.add(updateType, waypoint);
+    } catch (err) {
+      this.#newWaypointPresenter.setAborting();
+    }
+  }
+
+  async #delete(updateType, waypoint) {
+    this.#waypointPresenters.get(waypoint.id).setDeleting();
+
+    try {
+      this.#waypointsModel.delete(updateType, waypoint);
+    } catch (err) {
+      this.#waypointPresenters.get(waypoint.id).setAborting();
+    }
+  }
+
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {

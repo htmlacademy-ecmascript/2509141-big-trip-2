@@ -1,11 +1,13 @@
-const createCancelButtonTemplate = () =>
-  '<button class="event__reset-btn" type="reset">Cancel</button>';
+const createCancelButtonTemplate = (isDisabled) =>
+  `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>`;
 
-const createDeleteButtonTemplate = () =>
-  '<button class="event__reset-btn" type="reset">Delete</button>';
+const createDeleteButtonTemplate = (isDisabled, isDeleting) =>
+  `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+    ${isDeleting ? 'Deleting...' : 'Delete'}
+  </button>`;
 
-const createRollupButtonTemplate = () =>
-  `<button class="event__rollup-btn" type="button">
+const createRollupButtonTemplate = (isDisabled) =>
+  `<button class="event__rollup-btn" type="button"  ${isDisabled ? 'disabled' : ''}>
     <span class="visually-hidden">Open event</span>
   </button>`;
 

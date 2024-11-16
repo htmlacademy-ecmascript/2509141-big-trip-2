@@ -48,6 +48,8 @@ const Mode = {
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
 };
 
 const URL = {
@@ -55,6 +57,12 @@ const URL = {
   DESTINATIONS: 'destinations',
   OFFERS: 'offers'
 };
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 
 export {
   TYPES, DEFAULT_TYPE,
@@ -64,5 +72,6 @@ export {
   WAYPOINT_COUNT,
   UserAction, UpdateType,
   Mode,
-  Method, URL
+  Method, URL,
+  TimeLimit
 };

@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { isEscapeKey } from '../util/util';
 import { DEFAULT_TYPE, Mode, UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition } from '../framework/render';
@@ -63,26 +62,43 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#editFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    // ❓ Объеденить бы isDisabled, isSaving и isDeleting в один класс с методом resetFormState...
+    const resetFormState = () => {
+      this.#editFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editFormComponent.shake(resetFormState);
+  }
+
 
   #makeBlankWaypoint = () => ({
-    'id': nanoid(),
-    'type': DEFAULT_TYPE,
-    'base_price': 0,
-    'is_favorite': false,
-    'date_from': new Date(),
-    'date_to': new Date(Date.now() + 60000),
-    'destination': null,
-    'offers': []
+    type: DEFAULT_TYPE.toLowerCase(),
+    price: 0,
+    isFavorite: false,
+    dateFrom: new Date(),
+    dateTo: new Date(Date.now() + 60000),
+    destination: null,
+    offers: []
   });
 
   #handleFormSubmit = (waypoint) => {
     this.#handleDataChange(
       UserAction.ADD,
       UpdateType.MINOR,
-      {id: nanoid(), ...waypoint}
+      waypoint
     );
-
-    this.destroy();
   };
 
   #handleCloseClick = () =>

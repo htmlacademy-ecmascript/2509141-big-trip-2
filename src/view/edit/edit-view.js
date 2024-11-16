@@ -110,10 +110,10 @@ export default class EditView extends AbstractStatefulView {
 
   #updatePriceOf = (waypoint) => {
     const newPrice = Number(this.element.querySelector('.event__input--price').value);
-    const oldPrice = waypoint['base_price'];
+    const oldPrice = waypoint.price;
 
     if (newPrice !== oldPrice) {
-      waypoint['base_price'] = newPrice;
+      waypoint.price = newPrice;
     }
   };
 
@@ -135,7 +135,7 @@ export default class EditView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
 
-    if (!isValidDateInterval(this._state['date_from'], this._state['date_to'])) {
+    if (!isValidDateInterval(this._state.dateFrom, this._state.dateTo)) {
       return;
     }
 
@@ -148,37 +148,48 @@ export default class EditView extends AbstractStatefulView {
 
 
   #dateFromChangeHandler = ([userDate]) =>
-    this.updateElement({'date_from': userDate});
+    this.updateElement({dateFrom: userDate});
 
   #dateToChangeHandler = ([userDate]) =>
-    this.updateElement({'date_to': userDate});
+    this.updateElement({dateTo: userDate});
 
   #makeFlatpickr(selector, dateKey, cb) {
-    return flatpickr(
-      this.element.querySelector(`[name="event-${selector}-time"]`),
-      {
-        dateFormat: 'j/m/y H:i',
-        defaultDate: this._state[`${dateKey}`],
-        enableTime: true,
-        time_24hr: true,
-        onChange: cb
-      }
-    );
+    selector = this.element.querySelector(`[name="event-${selector}-time"]`);
+
+    const config = {
+      dateFormat: 'j/m/y H:i',
+      defaultDate: this._state[`${dateKey}`],
+      enableTime: true,
+      time_24hr: true, // ❓ Параметры сторонней библиотеки нарушают правила линтера. Хорошо ли это?
+      onChange: cb
+    };
+
+    return flatpickr(selector, config);
   }
 
   #setDatepicker() {
-    this.#datepickerFrom = this.#makeFlatpickr('start', 'date_from', this.#dateFromChangeHandler);
-    this.#datepickerTo = this.#makeFlatpickr('end', 'date_to', this.#dateToChangeHandler);
+    this.#datepickerFrom = this.#makeFlatpickr('start', 'dateFrom', this.#dateFromChangeHandler);
+    this.#datepickerTo = this.#makeFlatpickr('end', 'dateTo', this.#dateToChangeHandler);
   }
 
 
   static parseWaypointToState(waypoint, allTypeOffers) {
-    return {...waypoint, allTypeOffers};
+    return {
+      ...waypoint,
+      allTypeOffers,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    };
   }
 
   static parseStateToWaypoint(state) {
     const waypoint = {...state};
+
     delete waypoint.allTypeOffers;
+    delete waypoint.isDisabled;
+    delete waypoint.isDeleting;
+    delete waypoint.isSaving;
 
     return waypoint;
   }
