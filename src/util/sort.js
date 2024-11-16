@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 
 function sortByDate(a, b) {
-  return dayjs(b.dateFrom).diff(a.dateFrom);
+  return dayjs(a.dateFrom).diff(b.dateFrom);
 }
 
 function sortByDuration(a, b) {
