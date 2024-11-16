@@ -193,7 +193,7 @@ export default class EventsPresenter {
     this.#waypointPresenters.get(waypoint.id).setDeleting();
 
     try {
-      this.#waypointsModel.delete(updateType, waypoint);
+      await this.#waypointsModel.delete(updateType, waypoint);
     } catch (err) {
       this.#waypointPresenters.get(waypoint.id).setAborting();
     }
