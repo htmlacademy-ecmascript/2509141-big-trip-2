@@ -84,7 +84,7 @@ export default class NewWaypointPresenter {
 
 
   #makeBlankWaypoint = () => ({
-    type: DEFAULT_TYPE,
+    type: DEFAULT_TYPE.toLowerCase(),
     price: 0,
     isFavorite: false,
     dateFrom: new Date(),

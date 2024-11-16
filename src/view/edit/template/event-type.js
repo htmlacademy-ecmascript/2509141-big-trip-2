@@ -1,12 +1,13 @@
 import { TYPES } from '/src/const';
 
 
-const createTypeItemTemplate = (id, type, checkedType) => {
-  const checked = (type === checkedType) ? 'checked' : '';
+const createTypeItemTemplate = (id, typeName, checkedType) => {
+  const lowType = typeName.toLowerCase();
+  const checked = (lowType === checkedType) ? 'checked' : '';
 
   return (`<div class="event__type-item">
-    <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked}>
-    <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type}-${id}">${type}</label>
+    <input id="event-type-${lowType}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${lowType}" ${checked}>
+    <label class="event__type-label  event__type-label--${lowType}" for="event-type-${lowType}-${id}">${typeName}</label>
   </div>`);
 };
 

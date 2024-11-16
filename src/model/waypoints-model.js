@@ -115,7 +115,7 @@ export default class WaypointsModel extends Observable {
   #adaptToServer(waypoint) {
     const adaptedWaypoint = {
       ...waypoint,
-      type: waypoint.type.toLowerCase(), // TODO: унифицировать наконец
+      type: waypoint.type,
       destination: waypoint.destination.id,
       offers: waypoint.offers.map((offer) => offer.id),
       'date_from': new Date(waypoint.dateFrom),
