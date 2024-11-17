@@ -36,6 +36,7 @@ export default class HeaderPresenter {
 
     this.#tripInfoComponent = new TripInfoView({
       route: this.#getRoute(),
+      dates: this.#getDates(),
       totalPrice: this.#getTotalPrice()
     });
 
@@ -95,5 +96,33 @@ export default class HeaderPresenter {
       (totalPrice, waypoint) => totalPrice + waypoint.price,
       initialValue
     );
+  }
+
+
+  #getDates() {
+    const sortedWaypoints = this.waypoints.toSorted(sortByDate);
+
+    const firstDate = sortedWaypoints.at(0).dateFrom;
+    let firstShortDate = this.#formatDate(firstDate);
+
+    const lastDate = sortedWaypoints.at(-1).dateTo;
+    const lastShortDate = this.#formatDate(lastDate);
+
+
+    if (firstShortDate === lastShortDate) {
+      return firstShortDate;
+    }
+
+    const isSameMonth = firstDate.getMonth() === lastDate.getMonth();
+    if (isSameMonth) {
+      firstShortDate = firstShortDate.split(' ')[0];
+    }
+
+    return `${firstShortDate}&nbsp;&mdash;&nbsp;${lastShortDate}`;
+  }
+
+  #formatDate(date) {
+    const options = { day: '2-digit', month: 'short'};
+    return date.toLocaleDateString('en', options);
   }
 }
