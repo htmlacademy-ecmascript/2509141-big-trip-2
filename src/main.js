@@ -7,6 +7,7 @@ import FilterModel from './model/filter-model.js';
 import NewWaypointButtonView from './view/header/new-waypoint-button-view.js';
 import WaypointsApiService from './waypoints-api-service.js';
 import { render } from './framework/render.js';
+import HeaderPresenter from './presenter/header-presenter.js';
 
 
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
@@ -27,9 +28,16 @@ const eventsPresenter = new EventsPresenter({
   waypointsModel,
   filterModel,
   offersModel,
-  onNewWaypointDestroy: handleNewWaypointFormClose
+  onNewWaypointDestroy: handleNewWaypointFormClose,
 });
 eventsPresenter.init();
+
+
+const siteHeaderElement = document.querySelector('.trip-main');
+const headerPresenter = new HeaderPresenter({
+  container: siteHeaderElement,
+  waypointsModel
+});
 
 
 const siteFiltersElement = document.querySelector('.trip-controls__filters');
@@ -53,10 +61,7 @@ function handleNewWaypointButtonClick() {
   newWaypointComponent.element.disabled = true;
 }
 
-const siteHeaderElement = document.querySelector('.trip-main');
-
 render(newWaypointComponent, siteHeaderElement);
-
 
 waypointsModel.init()
   .finally(() => {
