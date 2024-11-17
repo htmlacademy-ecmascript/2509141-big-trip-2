@@ -64,6 +64,9 @@ function handleNewWaypointButtonClick() {
 render(newWaypointComponent, siteHeaderElement);
 
 waypointsModel.init()
-  .finally(() => {
-    newWaypointComponent.element.disabled = false;
-  });
+  .then(
+    () => {
+      newWaypointComponent.element.disabled = false;
+    },
+    () => {}
+  );

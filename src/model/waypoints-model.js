@@ -36,7 +36,7 @@ export default class WaypointsModel extends Observable {
     } catch(err) {
       // ❓ Реализовал вывод ошибки связи с сервером через введение ещё одного типа обновления. Хорошо ли это?
       this._notify(UpdateType.ERROR);
-      return;
+      throw new Error(err);
     }
 
     this._notify(UpdateType.INIT);
