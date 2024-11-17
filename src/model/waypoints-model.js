@@ -111,6 +111,11 @@ export default class WaypointsModel extends Observable {
       price: waypoint['base_price']
     };
 
+    delete adaptedWaypoint['date_from'];
+    delete adaptedWaypoint['date_to'];
+    delete adaptedWaypoint['is_favorite'];
+    delete adaptedWaypoint['base_price'];
+
     return adaptedWaypoint;
   };
 
