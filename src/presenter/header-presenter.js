@@ -35,7 +35,8 @@ export default class HeaderPresenter {
     const prevTripInfoComponent = this.#tripInfoComponent;
 
     this.#tripInfoComponent = new TripInfoView({
-      route: this.#getRoute()
+      route: this.#getRoute(),
+      totalPrice: this.#getTotalPrice()
     });
 
     if (prevTripInfoComponent === null) {
@@ -85,5 +86,14 @@ export default class HeaderPresenter {
     const uniqueDestinations = [...new Set(destinations)];
 
     return uniqueDestinations;
+  }
+
+
+  #getTotalPrice() {
+    const initialValue = 0;
+    return this.waypoints.reduce(
+      (totalPrice, waypoint) => totalPrice + waypoint.price,
+      initialValue
+    );
   }
 }
