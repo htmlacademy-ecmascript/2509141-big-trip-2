@@ -93,8 +93,15 @@ export default class HeaderPresenter {
 
   #getTotalPrice() {
     const initialValue = 0;
-    return this.waypoints.reduce(
-      (totalPrice, waypoint) => totalPrice + waypoint.price,
+
+    return this.waypoints.reduce(this.#reducePrice, initialValue);
+  }
+
+  #reducePrice(initialValue, waypoint) {
+    initialValue += waypoint.price;
+
+    return waypoint.offers.reduce(
+      (totalPrice, offer) => totalPrice + offer.price,
       initialValue
     );
   }
