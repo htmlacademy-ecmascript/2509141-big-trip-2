@@ -52,6 +52,7 @@ export default class HeaderPresenter {
 
   #handleModelEvent = (updateType) => {
     switch (updateType) {
+      case UpdateType.MINOR:
       case UpdateType.INIT:
         this.init();
     }
@@ -64,17 +65,17 @@ export default class HeaderPresenter {
 
 
     const sortedWaypoints = this.waypoints.toSorted(sortByDate);
-    const destinations = this.#getDestinations(sortedWaypoints);
+    const uniqueDestinations = this.#getDestinations(sortedWaypoints);
 
-    const first = destinations.at(0);
-    const last = destinations.at(-1);
+    const first = uniqueDestinations.at(0);
+    const last = sortedWaypoints.at(-1).destination.name;
 
-    if (destinations.length === 2) {
+    if (uniqueDestinations.length === 2) {
       return `${first} &mdash; ${last}`;
     }
 
-    if (destinations.length === 3) {
-      const second = destinations.at(1);
+    if (uniqueDestinations.length === 3) {
+      const second = uniqueDestinations.at(1);
       return `${first} &mdash; ${second} &mdash; ${last}`;
     }
 
