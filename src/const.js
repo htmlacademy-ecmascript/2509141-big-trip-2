@@ -3,9 +3,9 @@ const DEFAULT_TYPE = 'Flight';
 
 const FilterType = {
   EVERYTHING: 'everything',
-  PAST: 'past',
+  FUTURE: 'future',
   PRESENT: 'present',
-  FUTURE: 'future'
+  PAST: 'past'
 };
 const DEFAULT_FILTER = FilterType.EVERYTHING;
 
