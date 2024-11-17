@@ -34,7 +34,9 @@ export default class WaypointsModel extends Observable {
 
       this.#waypoints = this.#waypoints.map(this.#adaptToClient);
     } catch(err) {
-      this.#waypoints = [];
+      // ❓ Реализовал вывод ошибки связи с сервером через введение ещё одного типа обновления. Хорошо ли это?
+      this._notify(UpdateType.ERROR);
+      return;
     }
 
     this._notify(UpdateType.INIT);

@@ -9,6 +9,7 @@ import LoadingView from '../view/list/loading-view.js';
 import WaypointPresenter from './waypoint-presenter.js';
 import filter from '../util/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
+import ErrorView from '../view/list/error-view.js';
 
 
 export default class EventsPresenter {
@@ -17,6 +18,7 @@ export default class EventsPresenter {
   #emptyListComponent = null;
   #listComponent = new ListView();
   #loadingComponent = new LoadingView();
+  #errorComponent = new ErrorView();
 
   #filterModel = null;
   #offersModel = null;
@@ -217,6 +219,11 @@ export default class EventsPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderAll();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        render(this.#errorComponent, this.#container);
         break;
     }
   };
