@@ -61,16 +61,15 @@ export default class HeaderPresenter {
   };
 
   #getRoute() {
-    if (this.waypoints.length === 1) {
-      return this.waypoints.at(0).destination.name;
-    }
-
-
     const sortedWaypoints = this.waypoints.toSorted(sortByDate);
     const uniqueDestinations = this.#getDestinations(sortedWaypoints);
 
     const first = uniqueDestinations.at(0);
-    const last = sortedWaypoints.at(-1).destination.name;
+    const last = uniqueDestinations.at(-1);
+
+    if (uniqueDestinations.length === 1) {
+      return this.waypoints.at(0).destination.name;
+    }
 
     if (uniqueDestinations.length === 2) {
       return `${first} &mdash; ${last}`;
@@ -88,6 +87,11 @@ export default class HeaderPresenter {
   #getDestinations(waypoints) {
     const destinations = waypoints.map((waypoint) => waypoint.destination.name);
     const uniqueDestinations = [...new Set(destinations)];
+
+    const lastDestination = waypoints.at(-1).destination.name;
+    if (uniqueDestinations.at(-1) !== lastDestination) {
+      uniqueDestinations.push(lastDestination);
+    }
 
     return uniqueDestinations;
   }
@@ -133,7 +137,7 @@ export default class HeaderPresenter {
 
   #formatDate(date) {
     const options = { day: '2-digit', month: 'short'};
-    return date.toLocaleDateString('en', options);
+    return date.toLocaleDateString('en-GB', options);
   }
 
 

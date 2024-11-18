@@ -26,8 +26,9 @@ const isMinor = (waypoint, updatedWaypoint) => {
   const priceChanged = waypoint.price !== updatedWaypoint.price;
   const startDayChanged = waypoint.dateFrom.getTime() !== updatedWaypoint.dateFrom.getTime();
   const endDayChanged = waypoint.dateTo.getTime() !== updatedWaypoint.dateTo.getTime();
+  const destinationChanged = waypoint.destination !== updatedWaypoint.destination;
 
-  return priceChanged || startDayChanged || endDayChanged;
+  return priceChanged || startDayChanged || endDayChanged || destinationChanged;
 };
 
 
