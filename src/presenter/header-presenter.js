@@ -2,6 +2,7 @@ import { UpdateType } from '../const';
 import { RenderPosition } from '../framework/render';
 import { sortByDate } from '../util/sort';
 import TripInfoView from '../view/header/trip-info-view';
+import FilterPresenter from './filter-presenter.js';
 import { render, remove, replace } from '/src/framework/render.js';
 
 
@@ -11,13 +12,14 @@ export default class HeaderPresenter {
   #waypointsModel = null;
 
 
-  constructor({container, waypointsModel}) {
+  constructor({container, waypointsModel, filterModel}) {
     this.#container = container;
-    this.#waypointsModel = waypointsModel;
 
+    this.#waypointsModel = waypointsModel;
 
     this.#waypointsModel.addObserver(this.#handleModelEvent);
 
+    this.#createFilterPresenter(filterModel);
   }
 
   get waypoints() {
@@ -132,5 +134,16 @@ export default class HeaderPresenter {
   #formatDate(date) {
     const options = { day: '2-digit', month: 'short'};
     return date.toLocaleDateString('en', options);
+  }
+
+
+  #createFilterPresenter(filterModel) {
+    const siteFiltersElement = document.querySelector('.trip-controls__filters');
+
+    new FilterPresenter({
+      container: siteFiltersElement,
+      waypointsModel: this.#waypointsModel,
+      filterModel
+    });
   }
 }
