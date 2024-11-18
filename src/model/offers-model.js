@@ -1,4 +1,4 @@
-import { getObj } from '../util/util';
+import { getObj } from '../util/common';
 
 
 export default class OffersModel {

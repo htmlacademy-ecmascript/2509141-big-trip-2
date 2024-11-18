@@ -1,4 +1,4 @@
-import { hasObjWithId } from '/src/util/util';
+import { hasObjWithId } from '/src/util/common';
 
 
 const isChecked = (id, checkedOffers) =>

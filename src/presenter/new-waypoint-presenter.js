@@ -1,4 +1,4 @@
-import { isEscapeKey } from '../util/util';
+import { isEscapeKey } from '../util/common';
 import { DEFAULT_TYPE, Mode, UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition } from '../framework/render';
 import EditView from '../view/edit/edit-view';

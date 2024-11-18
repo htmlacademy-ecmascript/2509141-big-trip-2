@@ -5,13 +5,8 @@ const isEscapeKey = (evt) =>
   evt.key === 'Escape' || evt.key === 'Esc';
 
 
-const createIdGeneratorInRange = (min, max) =>
-  () => min <= max ? min++ : null;
-
-
 const humanizeDate = (date, format) =>
   date ? dayjs(date).format(format) : '';
-
 
 const isValidDateInterval = (dateFrom, dateTo) =>
   dateFrom.getTime() < dateTo.getTime();
@@ -37,7 +32,6 @@ const isMinor = (waypoint, updatedWaypoint) => {
 
 
 export {
-  createIdGeneratorInRange,
   getObj, hasObjWithId,
   humanizeDate, isValidDateInterval,
   isEscapeKey,

@@ -2,7 +2,7 @@ import he from 'he';
 import dayjs from 'dayjs';
 import durationAPI from 'dayjs/plugin/duration';
 import AbstractView from '/src/framework/view/abstract-view';
-import { humanizeDate } from '/src/util/util';
+import { humanizeDate } from '/src/util/common';
 import { DateTimeFormat } from '/src/const';
 
 
