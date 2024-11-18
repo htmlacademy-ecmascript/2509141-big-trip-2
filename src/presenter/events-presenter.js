@@ -37,7 +37,7 @@ export default class EventsPresenter {
   });
 
 
-  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
+  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointFormClose}) {
     this.#container = container;
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
@@ -48,7 +48,7 @@ export default class EventsPresenter {
       container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
-      onDestroy: onNewWaypointDestroy,
+      onDestroy: onNewWaypointFormClose,
       onDataChange: this.#handleViewAction,
       onEventTypeChange: this.#handleEventTypeChange,
       onDestinationChange: this.#handleDestinationChange

@@ -64,6 +64,9 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+const AUTHORIZATION = 'Basic eo0w666dd29889b';
+
 
 export {
   TYPES, DEFAULT_TYPE,
@@ -74,5 +77,6 @@ export {
   UserAction, UpdateType,
   Mode,
   Method, URL,
-  TimeLimit
+  TimeLimit,
+  END_POINT, AUTHORIZATION
 };

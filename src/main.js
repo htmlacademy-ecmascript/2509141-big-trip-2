@@ -3,14 +3,10 @@ import DestinationsModel from './model/destinations-model.js';
 import WaypointsModel from './model/waypoints-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filter-model.js';
-import NewWaypointButtonView from './view/header/new-waypoint-button-view.js';
 import WaypointsApiService from './waypoints-api-service.js';
-import { render } from './framework/render.js';
 import HeaderPresenter from './presenter/header-presenter.js';
-
-
-const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
-const AUTHORIZATION = 'Basic eo0w666dd29889b';
+import NewWaypointButtonPresenter from './presenter/new-waypoint-button-presenter.js';
+import { END_POINT, AUTHORIZATION } from './const.js';
 
 
 const waypointsApiService = new WaypointsApiService(END_POINT, AUTHORIZATION);
@@ -27,6 +23,12 @@ new HeaderPresenter({
   filterModel
 });
 
+const newWaypointButtonPresenter = new NewWaypointButtonPresenter({
+  container: siteHeaderElement,
+  onClick: handleNewWaypointButtonClick
+});
+
+
 const siteEventsElement = document.querySelector('.trip-events');
 const eventsPresenter = new EventsPresenter({
   container: siteEventsElement,
@@ -34,29 +36,18 @@ const eventsPresenter = new EventsPresenter({
   waypointsModel,
   filterModel,
   offersModel,
-  onNewWaypointDestroy: handleNewWaypointFormClose,
+  onNewWaypointFormClose: newWaypointButtonPresenter.enable,
 });
 eventsPresenter.init();
 
 
-const newWaypointComponent = new NewWaypointButtonView({onClick: handleNewWaypointButtonClick});
-newWaypointComponent.element.disabled = true;
-
-function handleNewWaypointFormClose() {
-  newWaypointComponent.element.disabled = false;
-}
-
 function handleNewWaypointButtonClick() {
   eventsPresenter.createWaypoint();
-  newWaypointComponent.element.disabled = true;
 }
 
-render(newWaypointComponent, siteHeaderElement);
 
 waypointsModel.init()
   .then(
-    () => {
-      newWaypointComponent.element.disabled = false;
-    },
+    newWaypointButtonPresenter.enable,
     () => {}
   );
