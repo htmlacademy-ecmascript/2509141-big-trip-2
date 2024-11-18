@@ -1,15 +1,15 @@
-import { render, remove } from '/src/framework/render.js';
-import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const.js';
-import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
+import { render, remove } from '/src/framework/render';
+import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const';
+import { sortByDate, sortByDuration, sortByPrice } from '../util/sort';
 import UiBlocker from '/src/framework/ui-blocker/ui-blocker';
 import ListView from '../view/list/list-view';
 import SortView from '../view/list/sort-view';
-import EmptyView from '../view/list/empty-view.js';
-import LoadingView from '../view/list/loading-view.js';
-import WaypointPresenter from './waypoint-presenter.js';
-import filter from '../util/filter.js';
-import NewWaypointPresenter from './new-waypoint-presenter.js';
-import ErrorView from '../view/list/error-view.js';
+import EmptyView from '../view/list/empty-view';
+import LoadingView from '../view/list/loading-view';
+import WaypointPresenter from './waypoint-presenter';
+import filter from '../util/filter';
+import NewWaypointPresenter from './new-waypoint-presenter';
+import ErrorView from '../view/list/error-view';
 
 
 export default class EventsPresenter {

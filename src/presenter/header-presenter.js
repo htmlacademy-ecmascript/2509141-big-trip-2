@@ -2,8 +2,8 @@ import { UpdateType } from '../const';
 import { RenderPosition } from '../framework/render';
 import { sortByDate } from '../util/sort';
 import TripInfoView from '../view/header/trip-info-view';
-import FilterPresenter from './filter-presenter.js';
-import { render, remove, replace } from '/src/framework/render.js';
+import FilterPresenter from './filter-presenter';
+import { render, remove, replace } from '/src/framework/render';
 
 
 export default class HeaderPresenter {

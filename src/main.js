@@ -1,12 +1,12 @@
-import EventsPresenter from './presenter/events-presenter.js';
-import DestinationsModel from './model/destinations-model.js';
-import WaypointsModel from './model/waypoints-model.js';
-import OffersModel from './model/offers-model.js';
-import FilterModel from './model/filter-model.js';
-import WaypointsApiService from './waypoints-api-service.js';
-import HeaderPresenter from './presenter/header-presenter.js';
-import NewWaypointButtonPresenter from './presenter/new-waypoint-button-presenter.js';
-import { END_POINT, AUTHORIZATION } from './const.js';
+import EventsPresenter from './presenter/events-presenter';
+import DestinationsModel from './model/destinations-model';
+import WaypointsModel from './model/waypoints-model';
+import OffersModel from './model/offers-model';
+import FilterModel from './model/filter-model';
+import WaypointsApiService from './waypoints-api-service';
+import HeaderPresenter from './presenter/header-presenter';
+import NewWaypointButtonPresenter from './presenter/new-waypoint-button-presenter';
+import { END_POINT, AUTHORIZATION } from './const';
 
 
 const waypointsApiService = new WaypointsApiService(END_POINT, AUTHORIZATION);

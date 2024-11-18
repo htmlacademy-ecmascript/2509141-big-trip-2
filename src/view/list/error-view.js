@@ -1,4 +1,4 @@
-import AbstractView from '/src/framework/view/abstract-view.js';
+import AbstractView from '/src/framework/view/abstract-view';
 
 
 const createErrorTemplate = () =>

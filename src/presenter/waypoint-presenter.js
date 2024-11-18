@@ -1,8 +1,8 @@
-import { render, replace, remove } from '/src/framework/render.js';
-import { isEscapeKey, isMinor } from '../util/common.js';
-import EditView from '../view/edit/edit-view.js';
+import { render, replace, remove } from '/src/framework/render';
+import { isEscapeKey, isMinor } from '../util/common';
+import EditView from '../view/edit/edit-view';
 import WaypointView from '../view/list/waypoint-view';
-import { UpdateType, UserAction, Mode } from '../const.js';
+import { UpdateType, UserAction, Mode } from '../const';
 
 
 export default class WaypointPresenter {

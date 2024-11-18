@@ -1,5 +1,5 @@
-import Observable from '../framework/observable.js';
-import { DEFAULT_FILTER } from '../const.js';
+import Observable from '../framework/observable';
+import { DEFAULT_FILTER } from '../const';
 
 
 export default class FilterModel extends Observable {
