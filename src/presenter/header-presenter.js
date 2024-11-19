@@ -30,6 +30,8 @@ export default class HeaderPresenter {
   init() {
     if (this.waypoints.length > 0) {
       this.#renderTripInfo();
+    } else {
+      this.#removeTripInfo();
     }
   }
 
@@ -49,6 +51,15 @@ export default class HeaderPresenter {
 
     replace(this.#tripInfoComponent, prevTripInfoComponent);
     remove(prevTripInfoComponent);
+  }
+
+  #removeTripInfo() {
+    if (this.#tripInfoComponent === null) {
+      return;
+    }
+
+    remove(this.#tripInfoComponent);
+    this.#tripInfoComponent = null;
   }
 
 
