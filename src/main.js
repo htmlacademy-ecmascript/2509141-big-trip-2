@@ -42,7 +42,7 @@ eventsPresenter.init();
 
 
 function handleNewWaypointButtonClick() {
-  eventsPresenter.createWaypoint();
+  eventsPresenter.openNewWaypointForm();
 }
 
 
