@@ -1,23 +1,24 @@
-import { render, remove } from '/src/framework/render.js';
-import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const.js';
-import { sortByDate, sortByDuration, sortByPrice } from '../util/sort.js';
-import UiBlocker from '/src/framework/ui-blocker/ui-blocker';
+import { render, remove } from '/src/framework/render';
+import { DEFAULT_FILTER, DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType, UserAction, TimeLimit } from '../const';
+import { sortByDate, sortByDuration, sortByPrice } from '../util/sort';
+import filter from '../util/filter';
 import ListView from '../view/list/list-view';
+import NewWaypointPresenter from './new-waypoint-presenter';
+import WaypointPresenter from './waypoint-presenter';
+import LoadingView from '../view/list/loading-view';
+import EmptyView from '../view/list/empty-view';
+import ErrorView from '../view/list/error-view';
 import SortView from '../view/list/sort-view';
-import EmptyView from '../view/list/empty-view.js';
-import LoadingView from '../view/list/loading-view.js';
-import WaypointPresenter from './waypoint-presenter.js';
-import filter from '../util/filter.js';
-import NewWaypointPresenter from './new-waypoint-presenter.js';
+import UiBlocker from '/src/framework/ui-blocker/ui-blocker';
 
 
-// ❓ Модули EventsPresenter, EditView слишком большие. Возможно ли разбить их?
 export default class EventsPresenter {
   #container = null;
   #sortComponent = null;
   #emptyListComponent = null;
   #listComponent = new ListView();
   #loadingComponent = new LoadingView();
+  #errorComponent = new ErrorView();
 
   #filterModel = null;
   #offersModel = null;
@@ -29,28 +30,36 @@ export default class EventsPresenter {
 
   #currentFilter = DEFAULT_FILTER;
   #currentSortType = DEFAULT_SORT_TYPE;
+  #isNewWaypointFormOpen = false;
   #isLoading = true;
+
+  #handleNewWaypointFormClose = null;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
 
-  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointDestroy}) {
+  constructor({container, filterModel, waypointsModel, offersModel, destinationsModel, onNewWaypointFormClose}) {
     this.#container = container;
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
     this.#waypointsModel = waypointsModel;
     this.#destinationsModel = destinationsModel;
+    // ❓ Как правильно дополнить обработчик для передачи дальше по цепочке?
+    this.#handleNewWaypointFormClose = () => {
+      onNewWaypointFormClose();
+      this.#closeNewWaypointForm();
+    };
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
       container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
-      onDestroy: onNewWaypointDestroy,
-      onDataChange: this.#handleViewAction,
+      onDestroy: this.#handleNewWaypointFormClose,
+      onDestinationChange: this.#handleDestinationChange,
       onEventTypeChange: this.#handleEventTypeChange,
-      onDestinationChange: this.#handleDestinationChange
+      onDataChange: this.#handleViewAction,
     });
 
     this.#waypointsModel.addObserver(this.#handleModelEvent);
@@ -74,9 +83,22 @@ export default class EventsPresenter {
   }
 
   createWaypoint() {
+    this.#isNewWaypointFormOpen = true;
+
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
     this.#newWaypointPresenter.init();
+
+  }
+
+  #closeNewWaypointForm() {
+    this.#isNewWaypointFormOpen = false;
+
+    if (this.waypoints.length === 0) {
+      remove(this.#sortComponent);
+      this.#renderEmptyView(this.#currentFilter);
+    }
   }
 
   #renderAll() {
@@ -86,7 +108,7 @@ export default class EventsPresenter {
     }
 
     const waypoints = this.waypoints;
-    if (waypoints.length > 0) {
+    if (waypoints.length > 0 || this.#isNewWaypointFormOpen) {
       this.#renderSortView();
       this.#renderWaypoints(waypoints);
     } else {
@@ -133,8 +155,12 @@ export default class EventsPresenter {
   };
 
 
-  #removeAll({resetSortType = false} = {}) {
+  #removeAll({resetSortType = false, closeNewWaypointForm = true} = {}) {
     this.#clearWaypointList();
+
+    if (closeNewWaypointForm) {
+      this.#isNewWaypointFormOpen = false;
+    }
 
     remove(this.#sortComponent);
     remove(this.#emptyListComponent);
@@ -153,9 +179,7 @@ export default class EventsPresenter {
 
 
   #handleViewAction = async (actionType, updateType, waypoint) => {
-    // ❓ Зачем блокировать каждую кнопку через isDisable,
-    // если UiBlocker всё равно блокирует весь интерфейс?
-    this.#uiBlocker.block(); // ❓ Почему между кликом и блокировкой проходит так много времени?
+    this.#uiBlocker.block();
 
     switch (actionType) {
       case UserAction.UPDATE:
@@ -165,7 +189,7 @@ export default class EventsPresenter {
         await this.#add(updateType, waypoint);
         break;
       case UserAction.DELETE:
-        await this.#delete(updateType, waypoint); // ❓ Почему UiBlocker не работает именно во время удаления точки?
+        await this.#delete(updateType, waypoint);
         break;
     }
 
@@ -196,7 +220,7 @@ export default class EventsPresenter {
     this.#waypointPresenters.get(waypoint.id).setDeleting();
 
     try {
-      this.#waypointsModel.delete(updateType, waypoint);
+      await this.#waypointsModel.delete(updateType, waypoint);
     } catch (err) {
       this.#waypointPresenters.get(waypoint.id).setAborting();
     }
@@ -213,13 +237,18 @@ export default class EventsPresenter {
         this.#renderAll();
         break;
       case UpdateType.MAJOR:
-        this.#removeAll({resetSortType: true});
+        this.#removeAll({resetSortType: true, closeNewWaypointForm: false});
         this.#renderAll();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderAll();
+        break;
+      case UpdateType.ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        render(this.#errorComponent, this.#container);
         break;
     }
   };

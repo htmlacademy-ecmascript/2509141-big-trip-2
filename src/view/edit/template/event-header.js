@@ -1,5 +1,5 @@
 import he from 'he';
-import { humanizeDate } from '/src/util/util';
+import { humanizeDate } from '/src/util/common';
 import { DateTimeFormat, Mode } from '/src/const';
 import { createCancelButtonTemplate, createDeleteButtonTemplate, createRollupButtonTemplate } from './buttons';
 import createEventTypeTemplate from './event-type';

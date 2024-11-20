@@ -1,8 +1,8 @@
-import { render, replace, remove } from '/src/framework/render.js';
-import { isEscapeKey, isMinor } from '../util/util.js';
-import EditView from '../view/edit/edit-view.js';
+import { render, replace, remove } from '/src/framework/render';
+import { isEscapeKey, isMinor } from '../util/common';
+import EditView from '../view/edit/edit-view';
 import WaypointView from '../view/list/waypoint-view';
-import { UpdateType, UserAction, Mode } from '../const.js';
+import { UpdateType, UserAction, Mode } from '../const';
 
 
 export default class WaypointPresenter {
@@ -137,11 +137,8 @@ export default class WaypointPresenter {
   }
 
   #renderEditFormComponent(prevEditFormComponent) {
-    this.#renderComponent(Mode.EDITING, this.#editFormComponent, prevEditFormComponent);
-
-    // ❓ По аналогии с taskmanager-demo 8.2.3 (268e3cc). Но зачем?
-    // this.#renderComponent(Mode.EDITING, this.#waypointComponent, prevEditFormComponent);
-    // this.#mode = Mode.DEFAULT;
+    this.#renderComponent(Mode.EDITING, this.#waypointComponent, prevEditFormComponent);
+    this.#mode = Mode.DEFAULT;
   }
 
   #renderComponent(mode, newComponent, oldComponent) {

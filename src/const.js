@@ -3,9 +3,9 @@ const DEFAULT_TYPE = 'Flight';
 
 const FilterType = {
   EVERYTHING: 'everything',
-  PAST: 'past',
+  FUTURE: 'future',
   PRESENT: 'present',
-  FUTURE: 'future'
+  PAST: 'past'
 };
 const DEFAULT_FILTER = FilterType.EVERYTHING;
 
@@ -17,25 +17,25 @@ const SortType = {
 const DEFAULT_SORT_TYPE = SortType.DAY;
 
 const DateTimeFormat = {
+  TIME: 'HH:mm',
   SHORT_DATE: 'MMM D',
   EDIT: 'YY/MM/DD HH:mm',
   DATETIME_DAY: 'YYYY-MM-DD',
   DATETIME_FULL: 'YYYY-MM-DDTHH:mm',
-  TIME: 'HH:mm'
 };
 
-const WAYPOINT_COUNT = 4;
 
 const UserAction = {
-  UPDATE: 'UPDATE',
   ADD: 'ADD',
-  DELETE: 'DELETE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE'
 };
 
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  ERROR: 'ERROR',
   INIT: 'INIT'
 };
 
@@ -53,8 +53,8 @@ const Method = {
 };
 
 const URL = {
-  WAYPOINTS: 'points',
   DESTINATIONS: 'destinations',
+  WAYPOINTS: 'points',
   OFFERS: 'offers'
 };
 
@@ -63,15 +63,18 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
+const AUTHORIZATION = 'Basic eo0w666dd29889f';
+
 
 export {
   TYPES, DEFAULT_TYPE,
   FilterType, DEFAULT_FILTER,
   SortType, DEFAULT_SORT_TYPE,
   DateTimeFormat,
-  WAYPOINT_COUNT,
   UserAction, UpdateType,
   Mode,
   Method, URL,
-  TimeLimit
+  TimeLimit,
+  END_POINT, AUTHORIZATION
 };

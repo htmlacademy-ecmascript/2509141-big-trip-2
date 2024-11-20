@@ -1,16 +1,16 @@
 import AbstractStatefulView from '/src/framework/view/abstract-stateful-view';
 import createEventDetailsTemplate from './template/event-details';
 import createEventHeaderTemplate from './template/event-header';
-import { getObj, isValidDateInterval } from '/src/util/util';
+import { getObj, isValidDateInterval } from '/src/util/common';
 import { Mode } from '/src/const';
 import flatpickr from 'flatpickr';
 import '/node_modules/flatpickr/dist/flatpickr.min.css';
 
 
-const createEditTemplate = (waypoint, allTypeOffers, destinations, mode) =>
+const createEditTemplate = (waypoint, destinations, mode) =>
   `<form class="event event--edit" action="#" method="post">
     ${createEventHeaderTemplate(waypoint, destinations, mode)}
-    ${createEventDetailsTemplate(waypoint, allTypeOffers)}
+    ${createEventDetailsTemplate(waypoint)}
   </form>`;
 
 
@@ -45,7 +45,7 @@ export default class EditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditTemplate(this._state, this.#allTypeOffers, this.#destinations, this.#mode);
+    return createEditTemplate(this._state, this.#destinations, this.#mode);
   }
 
   reset(waypoint) {
@@ -136,9 +136,11 @@ export default class EditView extends AbstractStatefulView {
     evt.preventDefault();
 
     if (!isValidDateInterval(this._state.dateFrom, this._state.dateTo)) {
+      this.shake();
       return;
     }
 
+    this.#allTypeOffers = this._state.allTypeOffers;
     const waypoint = EditView.parseStateToWaypoint(this._state);
     this.#updatePriceOf(waypoint);
     this.#updateOffersOf(waypoint);
@@ -160,7 +162,7 @@ export default class EditView extends AbstractStatefulView {
       dateFormat: 'j/m/y H:i',
       defaultDate: this._state[`${dateKey}`],
       enableTime: true,
-      time_24hr: true, // ❓ Параметры сторонней библиотеки нарушают правила линтера. Хорошо ли это?
+      'time_24hr': true,
       onChange: cb
     };
 

@@ -5,13 +5,8 @@ const isEscapeKey = (evt) =>
   evt.key === 'Escape' || evt.key === 'Esc';
 
 
-const createIdGeneratorInRange = (min, max) =>
-  () => min <= max ? min++ : null;
-
-
 const humanizeDate = (date, format) =>
   date ? dayjs(date).format(format) : '';
-
 
 const isValidDateInterval = (dateFrom, dateTo) =>
   dateFrom.getTime() < dateTo.getTime();
@@ -31,13 +26,13 @@ const isMinor = (waypoint, updatedWaypoint) => {
   const priceChanged = waypoint.price !== updatedWaypoint.price;
   const startDayChanged = waypoint.dateFrom.getTime() !== updatedWaypoint.dateFrom.getTime();
   const endDayChanged = waypoint.dateTo.getTime() !== updatedWaypoint.dateTo.getTime();
+  const destinationChanged = waypoint.destination !== updatedWaypoint.destination;
 
-  return priceChanged || startDayChanged || endDayChanged;
+  return priceChanged || startDayChanged || endDayChanged || destinationChanged;
 };
 
 
 export {
-  createIdGeneratorInRange,
   getObj, hasObjWithId,
   humanizeDate, isValidDateInterval,
   isEscapeKey,

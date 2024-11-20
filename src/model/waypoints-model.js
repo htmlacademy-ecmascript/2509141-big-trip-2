@@ -34,7 +34,9 @@ export default class WaypointsModel extends Observable {
 
       this.#waypoints = this.#waypoints.map(this.#adaptToClient);
     } catch(err) {
-      this.#waypoints = [];
+      // ❓ Реализовал вывод ошибки связи с сервером через введение ещё одного типа обновления. Хорошо ли это?
+      this._notify(UpdateType.ERROR);
+      throw new Error(err);
     }
 
     this._notify(UpdateType.INIT);
@@ -108,6 +110,11 @@ export default class WaypointsModel extends Observable {
       isFavorite: waypoint['is_favorite'],
       price: waypoint['base_price']
     };
+
+    delete adaptedWaypoint['date_from'];
+    delete adaptedWaypoint['date_to'];
+    delete adaptedWaypoint['is_favorite'];
+    delete adaptedWaypoint['base_price'];
 
     return adaptedWaypoint;
   };
