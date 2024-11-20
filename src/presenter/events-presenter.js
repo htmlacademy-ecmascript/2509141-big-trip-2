@@ -30,7 +30,10 @@ export default class EventsPresenter {
 
   #currentFilter = DEFAULT_FILTER;
   #currentSortType = DEFAULT_SORT_TYPE;
+  #isNewWaypointFormOpen = false;
   #isLoading = true;
+
+  #handleNewWaypointFormClose = null;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
@@ -43,15 +46,19 @@ export default class EventsPresenter {
     this.#offersModel = offersModel;
     this.#waypointsModel = waypointsModel;
     this.#destinationsModel = destinationsModel;
+    this.#handleNewWaypointFormClose = () => {
+      onNewWaypointFormClose();
+      this.#closeNewWaypointForm();
+    };
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
       container: this.#listComponent.element,
       offersModel: this.#offersModel,
       destinationsModel: this.#destinationsModel,
-      onDestroy: onNewWaypointFormClose,
-      onDataChange: this.#handleViewAction,
+      onDestroy: this.#handleNewWaypointFormClose,
+      onDestinationChange: this.#handleDestinationChange,
       onEventTypeChange: this.#handleEventTypeChange,
-      onDestinationChange: this.#handleDestinationChange
+      onDataChange: this.#handleViewAction,
     });
 
     this.#waypointsModel.addObserver(this.#handleModelEvent);
@@ -75,9 +82,22 @@ export default class EventsPresenter {
   }
 
   createWaypoint() {
+    this.#isNewWaypointFormOpen = true;
+
     this.#currentSortType = DEFAULT_SORT_TYPE;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
     this.#newWaypointPresenter.init();
+
+  }
+
+  #closeNewWaypointForm() {
+    this.#isNewWaypointFormOpen = false;
+
+    if (this.waypoints.length === 0) {
+      remove(this.#sortComponent);
+      this.#renderEmptyView(this.#currentFilter);
+    }
   }
 
   #renderAll() {
@@ -87,7 +107,7 @@ export default class EventsPresenter {
     }
 
     const waypoints = this.waypoints;
-    if (waypoints.length > 0) {
+    if (waypoints.length > 0 || this.#isNewWaypointFormOpen) {
       this.#renderSortView();
       this.#renderWaypoints(waypoints);
     } else {
@@ -134,8 +154,12 @@ export default class EventsPresenter {
   };
 
 
-  #removeAll({resetSortType = false} = {}) {
+  #removeAll({resetSortType = false, closeNewWaypointForm = true} = {}) {
     this.#clearWaypointList();
+
+    if (closeNewWaypointForm) {
+      this.#isNewWaypointFormOpen = false;
+    }
 
     remove(this.#sortComponent);
     remove(this.#emptyListComponent);
@@ -212,7 +236,7 @@ export default class EventsPresenter {
         this.#renderAll();
         break;
       case UpdateType.MAJOR:
-        this.#removeAll({resetSortType: true});
+        this.#removeAll({resetSortType: true, closeNewWaypointForm: false});
         this.#renderAll();
         break;
       case UpdateType.INIT:

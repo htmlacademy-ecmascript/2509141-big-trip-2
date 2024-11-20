@@ -64,7 +64,7 @@ const TimeLimit = {
 };
 
 const END_POINT = 'https://22.objects.htmlacademy.pro/big-trip';
-const AUTHORIZATION = 'Basic eo0w666dd29889b';
+const AUTHORIZATION = 'Basic eo0w666dd29889f';
 
 
 export {
