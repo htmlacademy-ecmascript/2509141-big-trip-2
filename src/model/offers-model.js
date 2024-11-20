@@ -10,6 +10,13 @@ export default class OffersModel {
     this.#waypointsApiService = waypointsApiService;
   }
 
+  async init() {
+    try {
+      this.#offers = await this.#waypointsApiService.offers;
+    } catch(err) {
+      this.#offers = [];
+    }
+  }
 
   getOffersOfType = (type) =>
     getObj(this.#offers, 'type', type.toLowerCase()).offers;
@@ -26,14 +33,5 @@ export default class OffersModel {
 
   idsToOffers({type, offers: ids}) {
     return ids.map((id) => this.getOfferOfTypeById(type, id));
-  }
-
-
-  async init() {
-    try {
-      this.#offers = await this.#waypointsApiService.offers;
-    } catch(err) {
-      this.#offers = [];
-    }
   }
 }
