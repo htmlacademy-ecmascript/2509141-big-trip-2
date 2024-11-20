@@ -21,17 +21,13 @@ export default class OffersModel {
   getOffersOfType = (type) =>
     getObj(this.#offers, 'type', type.toLowerCase()).offers;
 
-  getOfferOfTypeById(type, id) {
+  getOfferById(type, id) {
     const offers = this.getOffersOfType(type);
     const offer = getObj(offers, 'id', id);
     return offer;
   }
 
-  hasOfferWithId(offers, id) {
-    return !!getObj(offers, 'id', id);
-  }
-
-  idsToOffers({type, offers: ids}) {
-    return ids.map((id) => this.getOfferOfTypeById(type, id));
+  getOffersByIds({type, offers: ids}) {
+    return ids.map((id) => this.getOfferById(type, id));
   }
 }
