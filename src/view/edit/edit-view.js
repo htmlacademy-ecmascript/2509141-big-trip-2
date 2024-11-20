@@ -136,6 +136,7 @@ export default class EditView extends AbstractStatefulView {
     evt.preventDefault();
 
     if (!isValidDateInterval(this._state.dateFrom, this._state.dateTo)) {
+      this.shake();
       return;
     }
 
