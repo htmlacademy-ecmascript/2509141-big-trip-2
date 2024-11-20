@@ -19,6 +19,7 @@ export default class NewWaypointButtonPresenter {
     this.#newWaypointButtonComponent = new NewWaypointButtonView({onClick: this.#newWaypointButtonClickHandler});
 
     this.#renderButton();
+    this.disable();
   }
 
   disable = () => {
