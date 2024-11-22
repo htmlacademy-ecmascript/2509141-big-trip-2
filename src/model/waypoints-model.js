@@ -34,7 +34,6 @@ export default class WaypointsModel extends Observable {
 
       this.#waypoints = this.#waypoints.map(this.#adaptToClient);
     } catch(err) {
-      // ❓ Реализовал вывод ошибки связи с сервером через введение ещё одного типа обновления. Хорошо ли это?
       this._notify(UpdateType.ERROR);
       throw new Error(err);
     }
@@ -104,7 +103,7 @@ export default class WaypointsModel extends Observable {
     const adaptedWaypoint = {
       ...waypoint,
       destination: this.#destinationsModel.getDestinationByID(waypoint.destination),
-      offers: this.#offersModel.idsToOffers(waypoint),
+      offers: this.#offersModel.getOffersByIds(waypoint),
       dateFrom: new Date(waypoint['date_from']),
       dateTo: new Date(waypoint['date_to']),
       isFavorite: waypoint['is_favorite'],

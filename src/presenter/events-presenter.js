@@ -46,7 +46,6 @@ export default class EventsPresenter {
     this.#offersModel = offersModel;
     this.#waypointsModel = waypointsModel;
     this.#destinationsModel = destinationsModel;
-    // ❓ Как правильно дополнить обработчик для передачи дальше по цепочке?
     this.#handleNewWaypointFormClose = () => {
       onNewWaypointFormClose();
       this.#closeNewWaypointForm();
@@ -82,7 +81,7 @@ export default class EventsPresenter {
     this.#renderAll();
   }
 
-  createWaypoint() {
+  openNewWaypointForm() {
     this.#isNewWaypointFormOpen = true;
 
     this.#currentSortType = DEFAULT_SORT_TYPE;
