@@ -1,20 +1,21 @@
 import dayjs from 'dayjs';
 
 
-function sortByDate(a, b) {
-  return dayjs(a.dateFrom).diff(b.dateFrom);
+function sortByDate(waypointA, waypointB) {
+  return dayjs(waypointA.dateFrom).diff(waypointB.dateFrom);
 }
 
-function sortByDuration(a, b) {
-  const durA = dayjs.duration(dayjs(a.dateTo).diff(a.dateFrom)).asMilliseconds();
-  const durB = dayjs.duration(dayjs(b.dateTo).diff(b.dateFrom)).asMilliseconds();
+function sortByDuration(waypointA, waypointB) {
+  const durationA = dayjs.duration(dayjs(waypointA.dateTo).diff(waypointA.dateFrom)).asMilliseconds();
+  const durationB = dayjs.duration(dayjs(waypointB.dateTo).diff(waypointB.dateFrom)).asMilliseconds();
 
-  return durB - durA;
+  return durationB - durationA;
 }
 
-function sortByPrice(a, b) {
-  return b.price - a.price;
+function sortByPrice(waypointA, waypointB) {
+  return waypointB.price - waypointA.price;
 }
+
 
 export {
   sortByDate,

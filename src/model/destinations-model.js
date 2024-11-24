@@ -1,4 +1,4 @@
-import { getObj } from '../util/common';
+import { getElement } from '../util/common';
 
 
 export default class DestinationsModel {
@@ -24,10 +24,10 @@ export default class DestinationsModel {
   }
 
   getDestinationByID(id) {
-    return getObj(this.#destinations, 'id', id);
+    return getElement(this.#destinations, 'id', id);
   }
 
   getDestinationByName(name) {
-    return getObj(this.#destinations, 'name', name);
+    return getElement(this.#destinations, 'name', name);
   }
 }

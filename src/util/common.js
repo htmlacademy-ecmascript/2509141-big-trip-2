@@ -12,14 +12,14 @@ const isValidDateInterval = (dateFrom, dateTo) =>
   dateFrom.getTime() < dateTo.getTime();
 
 
-const getObj = (array, key, value) =>
-  array.find((obj) => obj[key] === value);
+const getElement = (collection, key, value) =>
+  collection.find((element) => element[key] === value);
 
-const hasValueWithKeyInArray = (array, key, value) =>
-  !!getObj(array, key, value);
+const hasElement = (collection, key, value) =>
+  !!getElement(collection, key, value);
 
-const hasObjWithId = (array, id) =>
-  hasValueWithKeyInArray(array, 'id', id);
+const hasElementWithId = (collection, id) =>
+  hasElement(collection, 'id', id);
 
 
 const isMinor = (waypoint, updatedWaypoint) => {
@@ -33,7 +33,7 @@ const isMinor = (waypoint, updatedWaypoint) => {
 
 
 export {
-  getObj, hasObjWithId,
+  getElement, hasElementWithId,
   humanizeDate, isValidDateInterval,
   isEscapeKey,
   isMinor

@@ -1,7 +1,7 @@
 import AbstractStatefulView from '/src/framework/view/abstract-stateful-view';
 import createEventDetailsTemplate from './template/event-details';
 import createEventHeaderTemplate from './template/event-header';
-import { getObj, isValidDateInterval } from '/src/util/common';
+import { getElement, isValidDateInterval } from '/src/util/common';
 import { Mode } from '/src/const';
 import flatpickr from 'flatpickr';
 import '/node_modules/flatpickr/dist/flatpickr.min.css';
@@ -119,7 +119,7 @@ export default class EditView extends AbstractStatefulView {
 
   #inputToOffer = (input) => {
     const id = input.dataset.id;
-    return getObj(this.#allTypeOffers, 'id', id);
+    return getElement(this.#allTypeOffers, 'id', id);
   };
 
   #updateOffersOf(waypoint) {
