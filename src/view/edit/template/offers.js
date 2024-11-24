@@ -1,8 +1,8 @@
-import { hasObjWithId } from '/src/util/common';
+import { hasElementWithId } from '/src/util/common';
 
 
 const isChecked = (id, checkedOffers) =>
-  hasObjWithId(checkedOffers, id) ? 'checked' : '';
+  hasElementWithId(checkedOffers, id) ? 'checked' : '';
 
 
 const createOfferTemplate = ({id, title, price, isDisabled}, checkedOffers) =>

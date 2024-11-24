@@ -1,4 +1,4 @@
-import { getObj } from '../util/common';
+import { getElement } from '../util/common';
 
 
 export default class OffersModel {
@@ -19,11 +19,11 @@ export default class OffersModel {
   }
 
   getOffersOfType = (type) =>
-    getObj(this.#offers, 'type', type.toLowerCase()).offers;
+    getElement(this.#offers, 'type', type.toLowerCase()).offers;
 
   getOfferById(type, id) {
     const offers = this.getOffersOfType(type);
-    const offer = getObj(offers, 'id', id);
+    const offer = getElement(offers, 'id', id);
     return offer;
   }
 
